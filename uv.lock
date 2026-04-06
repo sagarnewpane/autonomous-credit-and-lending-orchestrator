@@ -1,0 +1,8 @@
+version = 1
+revision = 3
+requires-python = ">=3.12"
+
+[[package]]
+name = "autonomous-credit-and-lending-orchestrator"
+version = "0.1.0"
+source = { virtual = "." }

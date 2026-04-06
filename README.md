@@ -65,7 +65,7 @@ project-root/
 │   │   ├── database.py
 │── requirements.txt
 │── README.md
-│── .env
+│── .venv
 ```
 
 ---
