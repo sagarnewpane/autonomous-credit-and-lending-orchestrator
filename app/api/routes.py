@@ -25,7 +25,7 @@ async def apply_loan(
     monthly_income: float = Form(...),
     monthly_debt: float = Form(...),
     # Use this specific Annotated pattern:
-    documents: Annotated[list[UploadFile], File()] = None,
+    documents: Annotated[List[UploadFile], File()] = None,
     db: Session = Depends(get_db),
 ):
 
