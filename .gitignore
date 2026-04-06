@@ -5,3 +5,4 @@ pyproject.toml
 .vh/
 .uv/
 .python-version
+.env
