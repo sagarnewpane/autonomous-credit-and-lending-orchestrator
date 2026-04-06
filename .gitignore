@@ -4,3 +4,4 @@ uv.lock
 pyproject.toml
 .vh/
 .uv/
+.python-version
