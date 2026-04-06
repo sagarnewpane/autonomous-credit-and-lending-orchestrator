@@ -3,7 +3,8 @@ from typing import Generator
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
+from sqlmodel import SQLModel
 
 load_dotenv()
 DATABASE_URL = os.getenv("DB_URL")
@@ -15,15 +16,17 @@ if not DATABASE_URL:
     )
 
 
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy models."""
-
-
 engine = create_engine(
     DATABASE_URL,
     pool_pre_ping=True,
     future=True,
 )
+
+
+def create_db_and_tables():
+    """Create all database tables based on SQLModel models."""
+    SQLModel.metadata.create_all(engine)
+
 
 SessionLocal = sessionmaker(
     bind=engine,
@@ -42,8 +45,5 @@ def get_db() -> Generator[Session, None, None]:
         def endpoint(db: Session = Depends(get_db)):
             ...
     """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    with SessionLocal() as session:
+        yield session

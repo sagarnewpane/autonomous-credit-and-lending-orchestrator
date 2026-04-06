@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -25,7 +25,7 @@ async def apply_loan(
     monthly_income: float = Form(...),
     monthly_debt: float = Form(...),
     # Use this specific Annotated pattern:
-    documents: Annotated[List[UploadFile], File()] = None,
+    documents: Annotated[Optional[List[UploadFile]], File()] = None,
     db: Session = Depends(get_db),
 ):
 
@@ -40,6 +40,7 @@ async def apply_loan(
         )
         db.add(application)
         db.flush()  # assign application.id before commit
+        assert application.id is not None  # Type assertion after flush
 
         saved_documents: list[UploadedDocument] = []
         if documents:

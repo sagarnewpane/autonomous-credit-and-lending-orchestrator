@@ -1,62 +1,78 @@
 from datetime import datetime
+from typing import Optional
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.db.database import Base
-
-
-class LoanApplication(Base):
-    __tablename__ = "loan_applications"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    applicant_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    user_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    loan_amount: Mapped[float] = mapped_column(Float, nullable=False)
-    loan_purpose: Mapped[str] = mapped_column(Text, nullable=False)
-    monthly_income: Mapped[float] = mapped_column(Float, nullable=False)
-    monthly_debt: Mapped[float] = mapped_column(Float, nullable=False)
-
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
-
-    documents: Mapped[list["UploadedDocument"]] = relationship(
-        "UploadedDocument",
-        back_populates="application",
-        cascade="all, delete-orphan",
-    )
+from sqlalchemy import func
+from sqlmodel import Field, Relationship, SQLModel
 
 
-class UploadedDocument(Base):
+class LoanApplicationBase(SQLModel):
+    """Base schema for LoanApplication with common fields."""
+
+    applicant_name: str = Field(min_length=1, max_length=255)
+    user_id: str = Field(min_length=1, max_length=100, index=True)
+    loan_amount: float = Field(gt=0)
+    loan_purpose: str
+    monthly_income: float = Field(ge=0)
+    monthly_debt: float = Field(ge=0)
+
+
+class UploadedDocumentBase(SQLModel):
+    """Base schema for UploadedDocument with common fields."""
+
+    file_name: str = Field(min_length=1, max_length=255)
+    content_type: Optional[str] = Field(default=None, max_length=100)
+    file_size_bytes: Optional[int] = None
+
+
+class UploadedDocument(UploadedDocumentBase, table=True):
+    """ORM model for uploaded documents."""
+
     __tablename__ = "uploaded_documents"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    application_id: Mapped[int] = mapped_column(
-        Integer,
-        ForeignKey("loan_applications.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
-    file_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    content_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    file_size_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
-
-    uploaded_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        nullable=False,
+    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    application_id: int = Field(foreign_key="loan_applications.id", index=True)
+    uploaded_at: datetime = Field(
+        default_factory=lambda: datetime.now(),
+        sa_column_kwargs={"server_default": func.now()},
     )
 
-    application: Mapped["LoanApplication"] = relationship(
-        "LoanApplication",
-        back_populates="documents",
+    application: Optional["LoanApplication"] = Relationship(back_populates="documents")
+
+
+class LoanApplication(LoanApplicationBase, table=True):
+    """ORM model for loan applications."""
+
+    __tablename__ = "loan_applications"
+
+    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(),
+        sa_column_kwargs={"server_default": func.now()},
     )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(),
+        sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
+    )
+
+    documents: list[UploadedDocument] = Relationship(
+        back_populates="application",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
+
+
+# Response schemas (for API responses)
+class UploadedDocumentRead(UploadedDocumentBase):
+    """Schema for reading uploaded documents."""
+
+    id: int
+    application_id: int
+    uploaded_at: datetime
+
+
+class LoanApplicationRead(LoanApplicationBase):
+    """Schema for reading loan applications."""
+
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    documents: list[UploadedDocumentRead] = []
