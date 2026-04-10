@@ -4,7 +4,7 @@ Provides utilities for categorizing bank transactions
 """
 
 import re
-from data.income_data import NEPALI_BANK_ANCHORS, DEBIT_STEMS, CREDIT_STEMS, DebitCategory, CreditCategory
+from data.income_data import CATEGORIZATION_RULES, DebitCategory, CreditCategory
 
 
 def assign_tnx_category(transaction: dict):
@@ -22,29 +22,33 @@ def assign_tnx_category(transaction: dict):
     description = transaction.get('description', "").upper()
     tnx_type = transaction.get('type', "").upper()  # "CREDIT" or "DEBIT"
     
-    # --- STAGE 0: Specific keyword detection (before generic anchor codes) ---
-    # For IPS transfers, check if description contains specific category keywords
-    if "IPS" in description and tnx_type == "CREDIT":
-        if "REMIT" in description or "IME" in description:
-            return CreditCategory.REMITTANCE, 0.95
-        if "FREELANCE" in description or "UPWORK" in description or "FIVERR" in description:
-            return CreditCategory.FREELANCE, 0.95
-    
-    # --- STAGE 1: Anchor Code Match (Highest Confidence) ---
-    for code, mapping in NEPALI_BANK_ANCHORS.items():
-        if code in description:
-            cat = mapping.get("CR" if tnx_type == "CREDIT" else "DR")
-            if cat:
-                return cat, 0.95
+    # Process declarative rules in order
+    for rule in CATEGORIZATION_RULES:
+        # Check transaction type match
+        if rule.get("type") and rule["type"] != tnx_type:
+            continue
+            
+        rule_matched = True
+        
+        # Check if all required exact keywords are present
+        if "match_all" in rule:
+            for kw in rule["match_all"]:
+                if kw not in description:
+                    rule_matched = False
+                    break
+        
+        if not rule_matched:
+            continue
+            
+        # Check if ANY keyword from EACH required group is present
+        if "match_any_groups" in rule:
+            for group in rule["match_any_groups"]:
+                if not any(kw in description for kw in group):
+                    rule_matched = False
+                    break
+                    
+        if rule_matched:
+            return rule["category"], rule["confidence"]
 
-    # --- STAGE 2: General Word Stemming (Medium Confidence) ---
-    tokens = re.findall(r'\w+', description)
-    stems = CREDIT_STEMS if tnx_type == "CREDIT" else DEBIT_STEMS
-    
-    for category, stem_list in stems.items():
-        for token in tokens:
-            if any(token.startswith(stem) for stem in stem_list):
-                return category, 0.75
-
-    # --- STAGE 3: Unclassified ---
+    # Fallback: Unclassified
     return CreditCategory.UNKNOWN if tnx_type == "CREDIT" else DebitCategory.UNKNOWN, 0.0

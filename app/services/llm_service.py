@@ -15,6 +15,7 @@ def categorize_prompt(txns):
             - SALARY: Regular payroll, salary, or wages.
             - FREELANCE: Income from freelance work, gig work, or side projects (Upwork, Fiverr, etc).
             - REMITTANCE: Inward money from international or local remit services (IME, etc).
+            - LOCAL_BUSINESS: Income from local business (kirana shop, merchant) via QR payments, wallet collections, or wallet settlements (eSewa, Khalti, FonePay).
             - INTEREST: Bank interest credits.
             - TRANSFER: General P2P transfers or internal account movements.
             - INVESTMENT_RETURN: Returns from stocks, dividends, or IPO refunds.

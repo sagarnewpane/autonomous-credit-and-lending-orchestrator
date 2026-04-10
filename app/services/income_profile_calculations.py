@@ -240,7 +240,7 @@ import re
 # CONFIG
 # =========================================================
 PRIMARY_CATEGORY = "SALARY"
-SECONDARY_CATEGORIES = ["REMITTANCE", "FREELANCE", "INTEREST"]
+SECONDARY_CATEGORIES = ["REMITTANCE", "FREELANCE", "INTEREST", "LOCAL_BUSINESS"]
 
 DATE_FORMATS = ['%Y-%m-%d']
 
@@ -353,32 +353,44 @@ def calculate_dependency(transactions):
     return (secondary / total) * 100
 
 
-def extract_employer(description):
-    description = re.sub(r'IPS::SALARY/', '', description)
-    return description.split("/")[0].strip().upper()
+def get_total_months(transactions):
+    """Get unique months in dataset"""
+    months = set()
+    for txn in transactions:
+        dt = parse_date(txn["date"])
+        if dt:
+            months.add(dt.strftime("%Y-%m"))
+    return len(sorted(months))
 
 
-def calculate_employer_stats(transactions):
-    salary_txns = [t for t in transactions if t["category"] == PRIMARY_CATEGORY]
+def calculate_monthly_wallet_volume(transactions):
+    """Average monthly transaction volume through wallet platforms (eSewa, Khalti, FonePay)"""
+    wallet_keywords = ['ESEWA', 'KHALTI', 'FONEPAY']
+    
+    wallet_txns = [
+        t for t in transactions 
+        if any(keyword in t.get('description', '').upper() for keyword in wallet_keywords)
+    ]
+    
+    monthly = group_by_month(wallet_txns)
+    
+    return mean(monthly.values()) if monthly else 0.0
 
-    employers = [extract_employer(t["description"]) for t in salary_txns]
 
-    counts = Counter(employers)
-
-    if not counts:
-        return {
-            "unique": 0,
-            "dominance": 0
-        }
-
-    total = sum(counts.values())
-    max_share = max(counts.values()) / total
-
+def calculate_annual_income(transactions):
+    """Annualized primary income - only verified if 12+ months of data"""
+    ampi = calculate_ampi(transactions)
+    total_months = get_total_months(transactions)
+    
     return {
-        "unique": len(counts),
-        "dominance": max_share,
-        "counts": dict(counts)
+        "annual_amount": round(ampi * 12, 2),
+        "months_of_data": total_months,
+        "is_verified_annual": total_months >= 12,
+        "note": "Verified annual income" if total_months >= 12 else f"Projected annual (based on {total_months} months of data)"
     }
+
+
+
 
 
 # =========================================================
@@ -390,13 +402,19 @@ def generate_income_profile(transactions):
     volatility = calculate_volatility(transactions)
     cadence = calculate_cadence(transactions)
     dependency = calculate_dependency(transactions)
-    employer = calculate_employer_stats(transactions)
+    monthly_wallet = calculate_monthly_wallet_volume(transactions)
+    annual_income_data = calculate_annual_income(transactions)
 
     return {
         "income": {
             "primary_monthly_income": round(ampi, 2),
             "total_effective_income": round(tmvi, 2),
-            "secondary_contribution": round(tmvi - ampi, 2)
+            "secondary_contribution": round(tmvi - ampi, 2),
+            "annual_income": annual_income_data["annual_amount"],
+            "annual_income_months_of_data": annual_income_data["months_of_data"],
+            "annual_income_verified": annual_income_data["is_verified_annual"],
+            "annual_income_note": annual_income_data["note"],
+            "monthly_wallet_volume": round(monthly_wallet, 2)
         },
 
         "stability": {
@@ -406,13 +424,10 @@ def generate_income_profile(transactions):
         },
 
         "composition": {
-            "secondary_income_ratio_%": round(dependency, 1),
-            "employer_count": employer["unique"],
-            "primary_employer_dominance_%": round(employer["dominance"] * 100, 1)
+            "secondary_income_ratio_%": round(dependency, 1)
         },
 
         "raw": {
-            "cadence_gaps": cadence.get("gaps", []),
-            "employer_breakdown": employer.get("counts", {})
+            "cadence_gaps": cadence.get("gaps", [])
         }
     }
