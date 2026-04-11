@@ -1,10 +1,21 @@
+import os
+from dotenv import load_dotenv
 from ollama import Client
+from groq import Groq
 import json
 import re
 
-client = Client(
-  host='http://localhost:11434',
+load_dotenv()
+
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
+
+ollama_client = Client(
+  host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
 )
+
+groq_client = None
+if LLM_PROVIDER == "groq":
+    groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def categorize_prompt(txns):
     template = '''
@@ -37,6 +48,7 @@ def categorize_prompt(txns):
             2. Focus on the Merchant Name (e.g., "ORCHID COFFEE" is LIFESTYLE; "BHATBHATENI" is SHOPPING).
             3. Be decisive. If "FOOD" or "BURGER" is present, it is LIFESTYLE.
             4. Return ONLY the category name in plain text (e.g., "SALARY"). Do not include explanations.
+            5. If the confidence in less than 0.6 use UNKNOWN
 
             RESPOND WITH JSON ARRAY (no other text):
             It should contain the transaction id, category and a confidence score for the category picked on how sure you are. 0.0 for absolutely not sure, 0.5 for confused and 0.95 being absolute sure.
@@ -44,17 +56,33 @@ def categorize_prompt(txns):
     return template.format(count=len(txns), txns=txns)
 
 def call_llm(system, data):
-    response = client.chat(model='gemma4',think=False, messages=[
-    {
-        'role': 'system',
-        'content': f'{system}',
-    },
-    {
-        'role': 'user',
-        'content': f'{data}'
-    }
-    ])
-    return response.message.content
+    messages = [
+        {
+            'role': 'system',
+            'content': f'{system}',
+        },
+        {
+            'role': 'user',
+            'content': f'{data}'
+        }
+    ]
+    
+    if LLM_PROVIDER == "groq":
+        # Requires 'groq' package (pip install groq) and 'GROQ_API_KEY' env variable
+        import groq
+        # Initialize lazily to avoid crashing if groq is not installed but not used
+        global groq_client
+        if groq_client is None:
+            groq_client = groq.Groq(api_key=os.getenv("GROQ_API_KEY"))
+            
+        response = groq_client.chat.completions.create(
+            model=os.getenv("GROQ_MODEL", "llama3-70b-8192"),
+            messages=messages
+        )
+        return response.choices[0].message.content
+    else:
+        response = ollama_client.chat(model=os.getenv("OLLAMA_MODEL", "gemma4"), think=False, messages=messages)
+        return response.message.content
 
 def cleaned_json(response_text):
     # Remove markdown code block markers

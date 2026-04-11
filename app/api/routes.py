@@ -91,6 +91,7 @@ async def apply_loan(
         ) from exc
 
 
+
 # Endpoint for getting the loan decision decided by the system
 @router.get("/decision/{application_id}")
 async def get_decision(application_id: str):
