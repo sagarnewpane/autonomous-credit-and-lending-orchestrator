@@ -86,16 +86,20 @@ The field labels in Nepali mean:
 Extract these fields and return ONLY valid JSON:
 {{
   "full_name": "person's full name",
-  "citizenship_number": "number with dashes like 37-02-75-05633",
-  "date_of_birth": "date in any format found",
+  "citizenship_number_np": "original devanagari number",
+  "citizenship_number": "number with dashes like 37-02-75-05633 (MUST be English digits)",
+  "date_of_birth_np": "original devanagari date",
+  "date_of_birth": "date in any format found (MUST be English digits)",
   "issued_district": "district name",
   "father_name": "father's name",
   "grandfather_name": "grandfather's name",
-  "issued_date": "date if found, else null"
+  "issued_date_np": "original devanagari date",
+  "issued_date": "date (MUST be English digits) if found, else null"
 }}
 
 Rules:
-- Convert Nepali numbers to English if needed (०=0, १=1, २=2, etc.)
+- Always include the original Nepali/Devanagari values in the _np fields.
+- Convert Nepali numbers to English digits for the main fields (०=0, १=1, २=2, ३=3, ४=4, ५=5, ६=6, ७=7, ८=8, ९=9).
 - If field not found, use null
 - Return ONLY the JSON object, no extra text"""
 
@@ -125,11 +129,14 @@ Rules:
             # Fallback if LLM returns non-JSON
             extracted = {
                 "full_name": None,
+                "citizenship_number_np": None,
                 "citizenship_number": None,
+                "date_of_birth_np": None,
                 "date_of_birth": None,
                 "issued_district": None,
                 "father_name": None,
                 "grandfather_name": None,
+                "issued_date_np": None,
                 "issued_date": None
             }
         
@@ -199,19 +206,24 @@ LOCATION:
 Return ONLY valid JSON:
 {{
   "owner_name": "owner's full name",
-  "citizenship_number": "XX-XX-XX-XXXXX",
+  "citizenship_number_np": "original devanagari number",
+  "citizenship_number": "XX-XX-XX-XXXXX (MUST be English digits)",
   "father_or_husband_name": "father or husband name",
-  "issued_date": "date",
+  "issued_date_np": "original devanagari date",
+  "issued_date": "date (MUST be English digits)",
   "issuing_office": "office name",
-  "plot_number": "plot number like 123 or 123-क",
+  "plot_number_np": "original devanagari plot number",
+  "plot_number": "plot number like 123 or 123-A (MUST be English digits)",
   "land_area": "area number like 324.96",
   "transaction_type": "transaction description",
   "location_district": "district name",
-  "ward_number": "ward number"
+  "ward_number_np": "original devanagari ward number",
+  "ward_number": "ward number (MUST be English digits)"
 }}
 
 Rules:
-- Extract numbers even if mixed with Nepali text (e.g., "123-क" → "123-क" or "123")
+- Always include the original Nepali/Devanagari values in the _np fields.
+- Convert Nepali numbers to English digits for the main fields (०=0, १=1, २=2, ३=3, ४=4, ५=5, ६=6, ७=7, ८=8, ९=9).
 - Look for area numbers near "क्षेत्रफल" or in table right side
 - If field not found, use null
 - Return ONLY JSON, no extra text"""
@@ -240,11 +252,20 @@ Rules:
         except:
             extracted = {
                 "owner_name": None,
+                "citizenship_number_np": None,
+                "citizenship_number": None,
+                "father_or_husband_name": None,
+                "issued_date_np": None,
+                "issued_date": None,
+                "issuing_office": None,
+                "plot_number_np": None,
                 "plot_number": None,
                 "land_area": None,
-                "district": None,
-                "municipality": None,
+                "transaction_type": None,
+                "location_district": None,
+                "ward_number_np": None,
                 "ward_number": None,
+                "municipality": None,
                 "old_address": None
             }
         
@@ -308,22 +329,32 @@ CRITICAL FIELDS TO EXTRACT:
 
 Return ONLY valid JSON:
 {{
-  "tax_clearance_number": "certificate number",
+  "tax_clearance_number_np": "original devanagari certificate number",
+  "tax_clearance_number": "certificate number (MUST be English digits)",
   "taxpayer_name": "full name",
-  "pan_number": "PAN number",
-  "citizenship_number": "XX-XX-XX-XXXXX",
-  "issue_date": "YYYY.MM.DD format",
-  "statement_date": "YYYY.MM.DD format",
-  "income_statement_filed_date": "YYYY.MM.DD format",
-  "total_income_amount": "amount in rupees",
-  "taxable_income": "amount in rupees",
-  "tax_paid_amount": "amount in rupees",
+  "pan_number_np": "original devanagari PAN number",
+  "pan_number": "PAN number (MUST be English digits)",
+  "citizenship_number_np": "original devanagari citizenship number",
+  "citizenship_number": "XX-XX-XX-XXXXX (MUST be English digits)",
+  "issue_date_np": "original devanagari date",
+  "issue_date": "YYYY.MM.DD format (MUST be English digits)",
+  "statement_date_np": "original devanagari date",
+  "statement_date": "YYYY.MM.DD format (MUST be English digits)",
+  "income_statement_filed_date_np": "original devanagari date",
+  "income_statement_filed_date": "YYYY.MM.DD format (MUST be English digits)",
+  "total_income_amount_np": "original devanagari amount",
+  "total_income_amount": "amount in rupees (MUST be English digits)",
+  "taxable_income_np": "original devanagari amount",
+  "taxable_income": "amount in rupees (MUST be English digits)",
+  "tax_paid_amount_np": "original devanagari amount",
+  "tax_paid_amount": "amount in rupees (MUST be English digits)",
   "tax_officer_name": "officer name",
   "issuing_office": "office name"
 }}
 
 Rules:
-- Convert Nepali numbers to English digits (०=0, १=1, २=2, ३=3, ४=4, ५=5, ६=6, ७=7, ८=8, ९=9)
+- Always include the original Nepali/Devanagari values in the _np fields.
+- Convert Nepali numbers to English digits for the main fields (०=0, १=1, २=2, ३=3, ४=4, ५=5, ६=6, ७=7, ८=8, ९=9).
 - Keep amounts as strings with commas and decimals preserved
 - If field not found, use null
 - Return ONLY the JSON object, no extra text"""
@@ -353,15 +384,24 @@ Rules:
             extracted = json.loads(llm_output)
         except:
             extracted = {
+                "tax_clearance_number_np": None,
                 "tax_clearance_number": None,
                 "taxpayer_name": None,
+                "pan_number_np": None,
                 "pan_number": None,
+                "citizenship_number_np": None,
                 "citizenship_number": None,
+                "issue_date_np": None,
                 "issue_date": None,
+                "statement_date_np": None,
                 "statement_date": None,
+                "income_statement_filed_date_np": None,
                 "income_statement_filed_date": None,
+                "total_income_amount_np": None,
                 "total_income_amount": None,
+                "taxable_income_np": None,
                 "taxable_income": None,
+                "tax_paid_amount_np": None,
                 "tax_paid_amount": None,
                 "tax_officer_name": None,
                 "issuing_office": None
@@ -384,20 +424,7 @@ Rules:
             "document_type": "tax_clearance",
             "status": "failed",
             "confidence_score": 0.0,
-            "extracted_fields": {
-                "tax_clearance_number": None,
-                "taxpayer_name": None,
-                "pan_number": None,
-                "citizenship_number": None,
-                "issue_date": None,
-                "statement_statement_date": None,
-                "income_statement_filed_date": None,
-                "total_income_amount": None,
-                "taxable_income": None,
-                "tax_paid_amount": None,
-                "tax_officer_name": None,
-                "issuing_office": None
-            },
+            "extracted_fields": extracted_fields,
             "flags": ["llm_error", str(e)],
             "raw_ocr_text": raw_text
         }
@@ -625,7 +652,7 @@ def parse_documents(image_paths: List[str], document_types: List[str] = None, de
 
 
 def parser_node(state: AgentState):
-    file_paths = state.get("file_paths", [])
+    file_paths = state.get("file_paths", {})
     if not file_paths:
         return {
             "status": "parser_complete_no_files",
@@ -633,7 +660,17 @@ def parser_node(state: AgentState):
         }
         
     try:
-        result = parse_documents(file_paths)
+        paths = list(file_paths.values())
+        types = list(file_paths.keys())
+        result = parse_documents(paths, types)
+        
+        if not result.get("citizenship_number"):
+            errors = state.get("errors", [])
+            return {
+                "status": "parser_failed",
+                "errors": errors + ["Parsing error: Citizenship number not found in the provided documents."]
+            }
+            
         return {
             "extracted_docs": result,
             "status": "parser_complete"

@@ -12,8 +12,8 @@ async def run_test():
     # 1. Define the starting point (Initial State)
         # 1. Define the starting point (Initial State)
     initial_state: AgentState = {
-        "file_paths": ["data/test2.png", "data/test3.png", "data/tax.webp", "data/lalpurja.jpeg"],
-        "raw_transactions": raw_transactions,
+        "file_paths": {"citizenship": "data/lalpurja.jpeg", "lalpurja": "data/lalpurja.jpeg","tax":"data/tax.webp"},
+        "raw_transactions": raw_transactions
     }
 
     # print("--- 🚀 Starting Pipeline Test ---")
