@@ -3,6 +3,7 @@ from app.services.income_categorizer import assign_tnx_category
 from data.income_data import DebitCategory, CreditCategory
 from app.services.llm_service import categorize_txn
 from app.services.income_profile_calculations import generate_income_profile
+from app.services.risk_calculations import generate_risk_indicators
 
 def analyze(state: AgentState):
     all_txns = state['raw_transactions']
@@ -30,10 +31,16 @@ def analyze(state: AgentState):
 
     # 5. Generate the Final Profile
     income_profile = generate_income_profile(final_transactions)
+    
+    extracted_docs = state.get('extracted_docs', {})
+    loan_request = state.get('loan_request', {})
+    
+    indicators = generate_risk_indicators(income_profile, extracted_docs, loan_request)
 
     # 6. Return the update to the state
     return {
         "categorized_txns": final_transactions,
         "income_metrics": income_profile,
+        "indicators": indicators,
         "status": "income_analysis_complete"
     }

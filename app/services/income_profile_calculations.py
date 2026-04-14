@@ -1,7 +1,6 @@
 from datetime import datetime
-from statistics import mean, stdev
-from collections import defaultdict, Counter
-import re
+from statistics import mean, stdev, median
+from collections import defaultdict
 
 # =========================================================
 # CONFIG
@@ -42,20 +41,28 @@ def group_by_month(transactions):
     return monthly
 
 
+def get_all_months(transactions):
+    months = set()
+    for txn in transactions:
+        dt = parse_date(txn["date"])
+        if dt:
+            months.add(dt.strftime("%Y-%m"))
+    return sorted(months)
+
+
 # =========================================================
 # CORE METRICS
 # =========================================================
 def calculate_ampi(transactions):
-    """Average Monthly Primary Income (SALARY only)"""
+    """Robust Monthly Salary (median instead of mean)"""
     salary_txns = [t for t in transactions if t["category"] == PRIMARY_CATEGORY]
-
     monthly = group_by_month(salary_txns)
 
-    return mean(monthly.values()) if monthly else 0.0
+    return median(monthly.values()) if monthly else 0.0
 
 
 def calculate_tmvi(transactions):
-    """Total Monthly Verified Income (with risk-adjusted secondary income)"""
+    """Total Monthly Verified Income (average only months where secondary income occurs)"""
     ampi = calculate_ampi(transactions)
 
     secondary_txns = [
@@ -73,7 +80,6 @@ def calculate_tmvi(transactions):
 
 
 def calculate_volatility(transactions):
-    """Coefficient of Variation (σ / μ) on SALARY"""
     salary_txns = [t for t in transactions if t["category"] == PRIMARY_CATEGORY]
 
     monthly = group_by_month(salary_txns)
@@ -82,11 +88,14 @@ def calculate_volatility(transactions):
     if len(values) < 2:
         return 0.0
 
-    return stdev(values) / mean(values)
+    mu = mean(values)
+    if mu == 0:
+        return 0.0
+
+    return stdev(values) / mu
 
 
 def calculate_cadence(transactions):
-    """Average days between salary payments"""
     salary_txns = [t for t in transactions if t["category"] == PRIMARY_CATEGORY]
 
     dates = sorted([
@@ -97,85 +106,93 @@ def calculate_cadence(transactions):
         return {"avg_days": 0, "is_formal": False}
 
     gaps = [(dates[i] - dates[i-1]).days for i in range(1, len(dates))]
-
     avg_gap = mean(gaps)
+
+    is_formal = (
+        (FORMAL_MIN <= avg_gap <= FORMAL_MAX) or   # monthly
+        (13 <= avg_gap <= 16)                      # bi-monthly
+    )
 
     return {
         "avg_days": avg_gap,
-        "is_formal": FORMAL_MIN <= avg_gap <= FORMAL_MAX,
+        "is_formal": is_formal,
         "gaps": gaps
     }
 
 
 def calculate_dependency(transactions):
-    """% of income from secondary sources"""
-    primary = sum(t["amount"] for t in transactions if t["category"] == PRIMARY_CATEGORY)
-    secondary = sum(t["amount"] for t in transactions if t["category"] in SECONDARY_CATEGORIES)
+    """Monthly-based dependency (already correct, kept)"""
+    primary_txns = [t for t in transactions if t["category"] == PRIMARY_CATEGORY]
+    secondary_txns = [t for t in transactions if t["category"] in SECONDARY_CATEGORIES]
 
-    total = primary + secondary
+    monthly_primary = group_by_month(primary_txns)
+    monthly_secondary = group_by_month(secondary_txns)
 
-    if total == 0:
-        return 0
+    all_months = set(monthly_primary.keys()).union(set(monthly_secondary.keys()))
+    if not all_months:
+        return 0.0
 
-    return (secondary / total) * 100
+    monthly_ratios = []
+    for m in all_months:
+        p = monthly_primary.get(m, 0.0)
+        s = monthly_secondary.get(m, 0.0)
+        tot = p + s
+        if tot > 0:
+            monthly_ratios.append(s / tot)
 
-
-def get_total_months(transactions):
-    """Get unique months in dataset"""
-    months = set()
-    for txn in transactions:
-        dt = parse_date(txn["date"])
-        if dt:
-            months.add(dt.strftime("%Y-%m"))
-    return len(sorted(months))
+    return (mean(monthly_ratios) * 100) if monthly_ratios else 0.0
 
 
 def calculate_monthly_wallet_volume(transactions):
-    """Average monthly transaction volume through wallet platforms (eSewa, Khalti, FonePay)"""
+    """
+    Average monthly transaction volume through wallet platforms (eSewa, Khalti, FonePay)
+    INCLUDES all CREDIT transactions regardless of category to detect fraud mismatches
+    """
     wallet_keywords = ['ESEWA', 'KHALTI', 'FONEPAY']
-    
+
     wallet_txns = [
-        t for t in transactions 
-        if any(keyword in t.get('description', '').upper() for keyword in wallet_keywords)
+        t for t in transactions
+        if t.get("type") == "CREDIT"
+        and any(k in t.get('description', '').upper() for k in wallet_keywords)
     ]
-    
+
     monthly = group_by_month(wallet_txns)
-    
+
     return mean(monthly.values()) if monthly else 0.0
 
 
 def calculate_annual_income(transactions):
-    """Annualized primary income - only verified if 12+ months of data"""
     ampi = calculate_ampi(transactions)
-    total_months = get_total_months(transactions)
-    
+    total_months = len(get_all_months(transactions))
+
     return {
         "annual_amount": round(ampi * 12, 2),
         "months_of_data": total_months,
         "is_verified_annual": total_months >= 12,
-        "note": "Verified annual income" if total_months >= 12 else f"Projected annual (based on {total_months} months of data)"
+        "note": "Verified annual income" if total_months >= 12 else f"Projected annual (based on {total_months} months)"
     }
 
 
 def calculate_monthly_unverified_inflow(transactions):
-    """Average monthly inflow from unverified credit sources (e.g., UNKNOWN, TRANSFER)"""
     verified_categories = [PRIMARY_CATEGORY] + SECONDARY_CATEGORIES
+
     unverified_txns = [
         t for t in transactions
-        if t.get("type", "").upper() == "CREDIT" and t.get("category") not in verified_categories
+        if t.get("type", "").upper() == "CREDIT"
+        and t.get("category") not in verified_categories
     ]
-    
+
     monthly = group_by_month(unverified_txns)
     avg_monthly = mean(monthly.values()) if monthly else 0.0
-    
+
     sources = defaultdict(float)
     for t in unverified_txns:
         cat = t.get("category", "UNKNOWN")
         sources[cat] += float(t.get("amount", 0))
-        
+
     return {
         "amount": avg_monthly,
-        "sources": dict(sources) # Totals across the entire period by category
+        "sources": dict(sources)
     }
 
 

@@ -8,7 +8,13 @@ class AgentState(TypedDict):
     # Agent Outputs
     extracted_docs: Dict[str, Any]
     categorized_txns: List[Dict]
+    income_metrics: Dict[str, Any]
+    indicators: Dict[str, Any]
+    
+    # Context (For capacity/risk sizing)
+    loan_request: Dict[str, Any]
     
     # Flow Control
     status: str
+    compliance_notes: List[str]
     errors: List[str]
