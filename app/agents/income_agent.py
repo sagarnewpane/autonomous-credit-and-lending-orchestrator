@@ -30,7 +30,7 @@ def analyze(state: AgentState):
         final_transactions.append(tran)
 
     # 5. Generate the Final Profile
-    income_profile = generate_income_profile(final_transactions)
+    income_profile = generate_income_profile(final_transactions, state.get("extracted_docs", {}))
     
     extracted_docs = state.get('extracted_docs', {})
     loan_request = state.get('loan_request', {})

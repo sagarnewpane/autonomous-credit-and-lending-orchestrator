@@ -7,6 +7,7 @@ class CreditCategory(str, Enum):
     REMITTANCE = "REMITTANCE"
     FREELANCE = "FREELANCE"
     LOCAL_BUSINESS = "LOCAL_BUSINESS"
+    AGRICULTURE = "AGRICULTURE"
     TRANSFER = "TRANSFER"
     INTEREST = "INTEREST"
     INVESTMENT_RETURN = "INVESTMENT_RETURN"
@@ -62,12 +63,28 @@ CATEGORIZATION_RULES = [
         "category": CreditCategory.FREELANCE,
         "confidence": 0.95
     },
+    {
+        "type": "CREDIT",
+        "match_any_groups": [
+            ["COOPERATIVE", "CO-OPERATIVE", "SACCOS", "KRISHI", "AGRI", "FARM", "MILK", "DAIRY", "VEGETABLE", "CROP"],
+            ["PAYMENT", "SALE", "SETTLEMENT", "COLLECTION", "PROCEEDS", "DEPOSIT", "RECEIVED"]
+        ],
+        "category": CreditCategory.AGRICULTURE,
+        "confidence": 0.9
+    },
     # --- STAGE 1: Anchor Code Match (High Confidence) ---
-    {"type": "CREDIT", "match_all": ["IPS"], "category": CreditCategory.SALARY, "confidence": 0.95},
+    {
+        "type": "CREDIT",
+        "match_all": ["IPS"],
+        "match_any_groups": [["SALAR", "PAYROL", "WAG", "REMUNER", "EMPLOY", "HR"]],
+        "category": CreditCategory.SALARY,
+        "confidence": 0.95
+    },
     {"type": "DEBIT", "match_all": ["IPS"], "category": DebitCategory.UTILITIES, "confidence": 0.95},
 
     {"type": "CREDIT", "match_all": ["CIPS"], "category": CreditCategory.TRANSFER, "confidence": 0.95},
     {"type": "DEBIT", "match_all": ["CIPS"], "category": DebitCategory.TRANSFER, "confidence": 0.95},
+    {"type": "CREDIT", "match_all": ["IPS"], "category": CreditCategory.TRANSFER, "confidence": 0.6},
 
     {"type": "CREDIT", "match_all": ["POS"], "category": CreditCategory.INVESTMENT_RETURN, "confidence": 0.95},
     {"type": "DEBIT", "match_all": ["POS"], "category": DebitCategory.SHOPPING, "confidence": 0.95},
@@ -83,6 +100,7 @@ CATEGORIZATION_RULES = [
     {"type": "CREDIT", "match_any_groups": [["REMIT", "IME", "INWARD"]], "category": CreditCategory.REMITTANCE, "confidence": 0.75},
     {"type": "CREDIT", "match_any_groups": [["UPWORK", "FIVERR", "FREELANCER", "TOPTAL", "GURU", "99DESIGN", "FREELANC"]], "category": CreditCategory.FREELANCE, "confidence": 0.75},
     {"type": "CREDIT", "match_any_groups": [["QR", "KIRANA", "MERCHANT", "COLLECTION", "RECEIVED", "SETTLEMENT", "WALLET"]], "category": CreditCategory.LOCAL_BUSINESS, "confidence": 0.75},
+    {"type": "CREDIT", "match_any_groups": [["COOPERATIVE", "CO-OPERATIVE", "SACCOS", "KRISHI", "AGRI", "FARM", "MILK", "DAIRY", "VEGETABLE", "CROP"]], "category": CreditCategory.AGRICULTURE, "confidence": 0.75},
     {"type": "CREDIT", "match_any_groups": [["INT", "DIVID"]], "category": CreditCategory.INTEREST, "confidence": 0.75},
 
     # Debit Stems

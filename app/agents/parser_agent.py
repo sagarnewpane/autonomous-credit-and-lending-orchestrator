@@ -16,6 +16,22 @@ from app.models.state import AgentState
 pytesseract.pytesseract.tesseract_cmd = r'/opt/homebrew/bin/tesseract'
 load_dotenv()
 
+
+def parse_amount(amount_str):
+    if amount_str in (None, ""):
+        return None
+
+    cleaned = str(amount_str)
+    cleaned = cleaned.replace("रू.", "").replace("Rs.", "").replace("रु", "")
+    cleaned = cleaned.replace(":", ".")
+    cleaned = cleaned.replace(",", "")
+    cleaned = cleaned.strip()
+
+    try:
+        return float(cleaned)
+    except Exception:
+        return None
+
 def optimize_image_for_ocr(img):
     # 1. Grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -365,8 +381,6 @@ Rules:
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1
         )
-
-        print(response)
         
         llm_output = response.choices[0].message.content
         
@@ -420,11 +434,34 @@ Rules:
         }
         
     except Exception as e:
+        fallback_fields = {
+            "tax_clearance_number_np": None,
+            "tax_clearance_number": None,
+            "taxpayer_name": None,
+            "pan_number_np": None,
+            "pan_number": None,
+            "citizenship_number_np": None,
+            "citizenship_number": None,
+            "issue_date_np": None,
+            "issue_date": None,
+            "statement_date_np": None,
+            "statement_date": None,
+            "income_statement_filed_date_np": None,
+            "income_statement_filed_date": None,
+            "total_income_amount_np": None,
+            "total_income_amount": None,
+            "taxable_income_np": None,
+            "taxable_income": None,
+            "tax_paid_amount_np": None,
+            "tax_paid_amount": None,
+            "tax_officer_name": None,
+            "issuing_office": None
+        }
         return {
             "document_type": "tax_clearance",
             "status": "failed",
             "confidence_score": 0.0,
-            "extracted_fields": extracted_fields,
+            "extracted_fields": fallback_fields,
             "flags": ["llm_error", str(e)],
             "raw_ocr_text": raw_text
         }
@@ -434,16 +471,6 @@ def format_for_scoring(extracted_data: dict, doc_type: str) -> dict:
     Format Document Agent output for Scoring Agent
     Minimal format: citizenship_number + agent_source + features
     """
-    
-    # Parse amount helper
-    def parse_amount(amount_str):
-        if not amount_str:
-            return None
-        cleaned = str(amount_str).replace(",", "").replace("रू.", "").replace("Rs.", "").strip()
-        try:
-            return float(cleaned)
-        except:
-            return None
     
     # Get citizenship number (from any doc type)
     citizenship_number = (
@@ -465,26 +492,45 @@ def format_for_scoring(extracted_data: dict, doc_type: str) -> dict:
         )
         
         features = {
-            "doc_annual_income": annual_income,
-            "doc_monthly_income": round(annual_income / 12, 2) if annual_income else None,
+            "declared_annual_income": annual_income,
+            "declared_monthly_income": round(annual_income / 12, 2) if annual_income else None,
             "tax_compliance_flag": 1 if tax_paid and tax_paid > 0 else 0,
             "tax_paid_amount": tax_paid,
-            "effective_tax_rate": round(tax_paid / annual_income, 5) if annual_income and annual_income > 0 else None
+            "effective_tax_rate": round(tax_paid / annual_income, 5) if annual_income and annual_income > 0 else None,
+            "tax_document_present": True
         }
         
     elif doc_type == "citizenship":
         # Identity only — no financial features
         features = {
-            "doc_annual_income": None,
-            "doc_monthly_income": None,
+            "declared_annual_income": None,
+            "declared_monthly_income": None,
             "tax_compliance_flag": 0,
             "tax_paid_amount": None,
-            "effective_tax_rate": None
+            "effective_tax_rate": None,
+            "tax_document_present": False
         }
         
     elif doc_type == "lalpurja":
-        # Skip for now — land data goes to Compliance later
-        return None  # Don't send to Scoring Agent
+        land_area = parse_amount(
+            extracted_data.get("land_area") or
+            extracted_data.get("extracted_fields", {}).get("land_area")
+        )
+        features = {
+            "declared_annual_income": None,
+            "declared_monthly_income": None,
+            "tax_compliance_flag": 0,
+            "tax_paid_amount": None,
+            "effective_tax_rate": None,
+            "tax_document_present": False,
+            "asset_backing": {
+                "asset_type": "land",
+                "ownership_documented": bool(citizenship_number),
+                "land_area": land_area,
+                "plot_number": extracted_data.get("plot_number") or extracted_data.get("extracted_fields", {}).get("plot_number"),
+                "district": extracted_data.get("location_district") or extracted_data.get("extracted_fields", {}).get("location_district")
+            }
+        }
     
     return {
         "citizenship_number": citizenship_number,
@@ -594,34 +640,32 @@ def parse_documents(image_paths: List[str], document_types: List[str] = None, de
     unique_cit_nums = set([num for _, num in all_citizenship_numbers])
     mismatch_flag = len(unique_cit_nums) > 1
     
-    # Parse amount helper (FIXED for colon)
-    def parse_amount(amount_str):
-        if not amount_str:
-            return None
-        cleaned = str(amount_str)
-        cleaned = cleaned.replace("रू.", "").replace("Rs.", "").replace("रु", "")
-        cleaned = cleaned.replace(":", ".")  # FIX: colon to dot
-        cleaned = cleaned.replace(",", "")  # Remove thousands separator
-        cleaned = cleaned.strip()
-        
-        try:
-            return float(cleaned)
-        except:
-            return None
-    
     # Extract from tax_result
     if tax_result:
         extracted = tax_result.get("extracted_fields", {})
-        annual_income = parse_amount(extracted.get("total_income_amount"))
+        declared_annual_income = parse_amount(extracted.get("total_income_amount"))
         tax_paid = parse_amount(extracted.get("tax_paid_amount"))
     else:
-        annual_income = None
+        declared_annual_income = None
         tax_paid = None
     
     # Calculate effective tax rate safely
     effective_tax_rate = None
-    if annual_income and annual_income > 0 and tax_paid is not None:
-        effective_tax_rate = round(tax_paid / annual_income, 5)
+    if declared_annual_income and declared_annual_income > 0 and tax_paid is not None:
+        effective_tax_rate = round(tax_paid / declared_annual_income, 5)
+
+    lalpurja_fields = (lalpurja_full_data or {}).get("extracted_fields", {})
+    land_area = parse_amount(lalpurja_fields.get("land_area"))
+    asset_backing = {
+        "has_lalpurja": bool(lalpurja_full_data),
+        "asset_type": "land" if lalpurja_full_data else None,
+        "ownership_documented": bool(lalpurja_fields.get("owner_name") or lalpurja_fields.get("citizenship_number")),
+        "land_area": land_area,
+        "plot_number": lalpurja_fields.get("plot_number"),
+        "district": lalpurja_fields.get("location_district"),
+        "owner_name": lalpurja_fields.get("owner_name"),
+        "document_confidence": (lalpurja_full_data or {}).get("confidence_score")
+    }
     
     # Build flags
     flags = []
@@ -635,11 +679,13 @@ def parse_documents(image_paths: List[str], document_types: List[str] = None, de
         
         "agent_source": "document",
         "features": {
-            "doc_annual_income": annual_income,
-            "doc_monthly_income": round(annual_income / 12, 2) if annual_income else None,
+            "declared_annual_income": declared_annual_income,
+            "declared_monthly_income": round(declared_annual_income / 12, 2) if declared_annual_income else None,
             "tax_compliance_flag": 1 if tax_paid and tax_paid > 0 else 0,
             "tax_paid_amount": tax_paid,
-            "effective_tax_rate": effective_tax_rate
+            "effective_tax_rate": effective_tax_rate,
+            "tax_document_present": bool(tax_result),
+            "asset_backing": asset_backing
         },
         "flags": flags,
         "all_citizenship_numbers_found": all_citizenship_numbers if mismatch_flag else None,

@@ -22,6 +22,7 @@ async def apply_loan(
     user_id: str = Form(...),
     loan_amount: float = Form(...),
     loan_purpose: str = Form(...),
+    tenure_months: int = Form(...),
     monthly_income: float = Form(...),
     monthly_debt: float = Form(...),
     # Use this specific Annotated pattern:
@@ -67,6 +68,7 @@ async def apply_loan(
                 "user_id": application.user_id,
                 "loan_amount": application.loan_amount,
                 "loan_purpose": application.loan_purpose,
+                "tenure_months": tenure_months,
                 "monthly_income": application.monthly_income,
                 "monthly_debt": application.monthly_debt,
                 "created_at": application.created_at.isoformat(),

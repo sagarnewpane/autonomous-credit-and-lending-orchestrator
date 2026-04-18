@@ -5,7 +5,7 @@ from app.models.state import AgentState
 
 async def run_test():
     # Load transactions from JSON
-    with open("data/transactions.json", "r") as f:
+    with open("data/transactions_farmer.json", "r") as f:
         data = json.load(f)
         raw_transactions = data.get("transactions", [])
 
@@ -13,7 +13,15 @@ async def run_test():
         # 1. Define the starting point (Initial State)
     initial_state: AgentState = {
         "file_paths": {"citizenship": "data/lalpurja.jpeg", "lalpurja": "data/lalpurja.jpeg","tax":"data/tax.webp"},
-        "raw_transactions": raw_transactions
+        "raw_transactions": raw_transactions,
+        "loan_request": {
+            "amount": 50000,
+            "existing_liabilities_monthly": 0,
+            "purpose": "business",
+            "tenure_months": 12,
+        },
+        "compliance_notes": [],
+        "errors": [],
     }
 
     # print("--- 🚀 Starting Pipeline Test ---")
@@ -27,7 +35,7 @@ async def run_test():
         # print("\n--- ✅ Test Complete ---")
         # print(f"Final Status: {final_state.get('status')}")
         
-        print(final_state)
+        print(json.dumps(final_state.get("final_output", final_state), indent=2, ensure_ascii=False))
         
     except Exception as e:
         print(f"--- ❌ Pipeline Failed: {e} ---")
@@ -36,5 +44,3 @@ async def run_test():
 
 if __name__ == "__main__":
     asyncio.run(run_test())
-
-

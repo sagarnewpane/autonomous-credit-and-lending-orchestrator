@@ -27,6 +27,7 @@ def categorize_prompt(txns):
             - FREELANCE: Income from freelance work, gig work, or side projects (Upwork, Fiverr, etc).
             - REMITTANCE: Inward money from international or local remit services (IME, etc).
             - LOCAL_BUSINESS: Income from local business (kirana shop, merchant) via QR payments, wallet collections, or wallet settlements (eSewa, Khalti, FonePay).
+            - AGRICULTURE: Agricultural or cooperative-linked income such as dairy, crop sales, livestock, vegetable sales, or cooperative settlements.
             - INTEREST: Bank interest credits.
             - TRANSFER: General P2P transfers or internal account movements.
             - INVESTMENT_RETURN: Returns from stocks, dividends, or IPO refunds.
@@ -46,9 +47,10 @@ def categorize_prompt(txns):
             ### GUIDELINES
             1. Clean the description by ignoring bank prefixes like "POS TRN FROM:", "FONEPAY::", or "NABIL/".
             2. Focus on the Merchant Name (e.g., "ORCHID COFFEE" is LIFESTYLE; "BHATBHATENI" is SHOPPING).
-            3. Be decisive. If "FOOD" or "BURGER" is present, it is LIFESTYLE.
-            4. Return ONLY the category name in plain text (e.g., "SALARY"). Do not include explanations.
-            5. If the confidence in less than 0.6 use UNKNOWN
+            3. Do not classify a credit as SALARY only because it mentions IPS, CIPS, or another payment rail; there must be payroll-like wording too.
+            4. Be decisive. If "FOOD" or "BURGER" is present, it is LIFESTYLE.
+            5. Return ONLY the category name in plain text (e.g., "SALARY"). Do not include explanations.
+            6. If the confidence in less than 0.6 use UNKNOWN
 
             RESPOND WITH JSON ARRAY (no other text):
             It should contain the transaction id, category and a confidence score for the category picked on how sure you are. 0.0 for absolutely not sure, 0.5 for confused and 0.95 being absolute sure.

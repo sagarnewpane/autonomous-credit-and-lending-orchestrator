@@ -56,28 +56,34 @@ def calculate_capacity_ratios(capacity, loan_amount, existing_liabilities_monthl
 
 def generate_risk_indicators(income_profile, extracted_docs, loan_request):
     doc_features = extracted_docs.get('features', {})
-    doc_monthly = doc_features.get('doc_monthly_income', 0)
+    declared_monthly = doc_features.get('declared_monthly_income', 0)
     tax_compliance = doc_features.get('tax_compliance_flag', False)
     effective_tax = doc_features.get('effective_tax_rate', 0.0)
     
-    wallet_monthly = income_profile.get('income', {}).get('monthly_wallet_volume', 0)
-    volatility = income_profile.get('stability', {}).get('volatility_cv', 0)
-    is_formal = income_profile.get('stability', {}).get('formal_employment', False)
+    observed_monthly = income_profile.get('income', {}).get('total_observed_income', 0)
+    effective_monthly = income_profile.get('income', {}).get('total_effective_income', 0)
+    primary_source = income_profile.get('income', {}).get('primary_income_source')
+    primary_profile = income_profile.get('sources', {}).get(primary_source, {}) if primary_source else {}
+    volatility = primary_profile.get('volatility_cv', 0)
+    is_formal = primary_source == "SALARY" and primary_profile.get('recurrence_ratio', 0) >= 0.75
     
     # Defaults in case loan_request is missing
     loan_amount = loan_request.get('amount', 500000) if loan_request else 500000
     existing_liab = loan_request.get('existing_liabilities_monthly', 0) if loan_request else 0
+    term_months = loan_request.get('tenure_months', 12) if loan_request else 12
     
-    mismatch = calculate_income_mismatch_ratio(doc_monthly, wallet_monthly)
+    mismatch = calculate_income_mismatch_ratio(declared_monthly, observed_monthly)
     stability = calculate_income_stability_score(volatility, is_formal)
     tax_trust = calculate_tax_trust_score(tax_compliance, effective_tax)
-    capacity = calculate_estimated_monthly_capacity(doc_monthly, wallet_monthly)
-    ratios = calculate_capacity_ratios(capacity, loan_amount, existing_liab)
+    capacity = effective_monthly
+    ratios = calculate_capacity_ratios(capacity, loan_amount, existing_liab, term_months=term_months)
     
     return {
         "mismatch_ratio": mismatch,
         "stability_score": stability,
         "tax_trust_score": tax_trust,
         "estimated_monthly_capacity": capacity,
+        "declared_monthly_income": declared_monthly,
+        "observed_monthly_income": observed_monthly,
         "capacity_ratios": ratios
     }

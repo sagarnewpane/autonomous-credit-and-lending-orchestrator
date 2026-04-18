@@ -10,6 +10,9 @@ class AgentState(TypedDict):
     categorized_txns: List[Dict]
     income_metrics: Dict[str, Any]
     indicators: Dict[str, Any]
+    scorecard: Dict[str, Any]
+    compliance_result: Dict[str, Any]
+    final_output: Dict[str, Any]
     
     # Context (For capacity/risk sizing)
     loan_request: Dict[str, Any]
