@@ -198,7 +198,7 @@ def calculate_source_profile(category, transactions, months, extracted_docs):
 def build_document_validation(extracted_docs, observed_monthly_income):
     features = extracted_docs.get("features", {})
     declared_monthly = features.get("declared_monthly_income")
-    asset_backing = features.get("asset_backing", {})
+    asset_backing = features.get("asset_backing") or {}
 
     validation = {
         "tax_document_present": bool(features.get("tax_document_present")),

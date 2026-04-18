@@ -148,7 +148,7 @@ def build_suggestions(
 
 def build_top_risk_drivers(
     fraud_flags: List[str],
-    income_mismatch_ratio: float,
+    income_mismatch_ratio: Optional[float],
     stability_score: float,
     informal_income_ratio: float,
 ) -> List[str]:
@@ -159,7 +159,9 @@ def build_top_risk_drivers(
     elif "identity_mismatch_low_confidence" in fraud_flags:
         drivers.append("Identity evidence is inconsistent but may be OCR-truncated")
 
-    if income_mismatch_ratio not in (0, float("inf")) and income_mismatch_ratio < 0.5:
+    if "income_mismatch_unavailable" in fraud_flags:
+        drivers.append("Declared income evidence is unavailable, so scoring relies on cash-flow behavior")
+    elif income_mismatch_ratio not in (0, float("inf"), None) and income_mismatch_ratio < 0.5:
         drivers.append("Declared income is far below observed cash flow")
     elif income_mismatch_ratio > 3:
         drivers.append("Declared income is far above observed cash flow")
@@ -182,8 +184,14 @@ def generate_scorecard(
     citizenship_number = extracted_docs.get("citizenship_number")
     capacity = float(indicators.get("estimated_monthly_capacity", 0) or 0)
     observed_monthly = float(indicators.get("observed_monthly_income", 0) or 0)
-    declared_monthly = float(indicators.get("declared_monthly_income", 0) or 0)
-    income_mismatch_ratio = calculate_income_mismatch_ratio(declared_monthly, observed_monthly)
+    declared_monthly_raw = indicators.get("declared_monthly_income")
+    declared_monthly = float(declared_monthly_raw or 0)
+    tax_document_present = bool(indicators.get("tax_document_present"))
+    income_mismatch_ratio = (
+        calculate_income_mismatch_ratio(declared_monthly, observed_monthly)
+        if declared_monthly_raw is not None
+        else None
+    )
 
     primary_source = income_metrics.get("income", {}).get("primary_income_source")
     primary_profile = income_metrics.get("sources", {}).get(primary_source, {}) if primary_source else {}
@@ -217,7 +225,10 @@ def generate_scorecard(
     score = DEFAULT_BASELINE_SCORE
 
     mismatch_delta = 0
-    if income_mismatch_ratio == float("inf"):
+    if declared_monthly_raw is None:
+        mismatch_delta = 0
+        fraud_flags.append("income_mismatch_unavailable")
+    elif income_mismatch_ratio == float("inf"):
         mismatch_delta = -220
         fraud_flags.append("declared_income_without_observed_cashflow")
     elif income_mismatch_ratio < 0.5:
@@ -237,7 +248,7 @@ def generate_scorecard(
     score += stability_delta
     score_breakdown.append(build_score_delta("Income stability", stability_delta))
 
-    tax_delta = int(round((tax_trust_score - 50) * 2.4))
+    tax_delta = int(round((tax_trust_score - 50) * 2.4)) if tax_document_present else 0
     score += tax_delta
     score_breakdown.append(build_score_delta("Tax trust", tax_delta))
 
@@ -264,7 +275,7 @@ def generate_scorecard(
         score += identity_delta
         score_breakdown.append(build_score_delta("Identity consistency", identity_delta))
 
-    asset_backing = extracted_docs.get("features", {}).get("asset_backing", {})
+    asset_backing = extracted_docs.get("features", {}).get("asset_backing") or {}
     asset_delta = 25 if asset_backing.get("has_lalpurja") and asset_backing.get("ownership_documented") else 0
     score += asset_delta
     if asset_delta:

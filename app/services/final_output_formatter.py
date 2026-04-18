@@ -27,7 +27,7 @@ def build_final_output(state: Dict[str, Any]) -> Dict[str, Any]:
             "declared_monthly_income": document_validation.get("declared_monthly_income"),
             "months_of_data": income_section.get("months_of_data"),
             "informal_income_ratio_%": income_metrics.get("composition", {}).get("informal_income_ratio_%"),
-            "asset_backing": document_validation.get("asset_backing"),
+            "asset_backing": document_validation.get("asset_backing") or {},
         },
         "score_summary": {
             "credit_score": scorecard.get("credit_score"),

@@ -5,20 +5,20 @@ from app.models.state import AgentState
 
 async def run_test():
     # Load transactions from JSON
-    with open("data/transactions_farmer.json", "r") as f:
+    with open("data/transactions.json", "r") as f:
         data = json.load(f)
         raw_transactions = data.get("transactions", [])
 
     # 1. Define the starting point (Initial State)
         # 1. Define the starting point (Initial State)
     initial_state: AgentState = {
-        "file_paths": {"citizenship": "data/lalpurja.jpeg", "lalpurja": "data/lalpurja.jpeg","tax":"data/tax.webp"},
+        "file_paths": {"citizenship": "data/lalpurja.jpeg"},
         "raw_transactions": raw_transactions,
         "loan_request": {
-            "amount": 50000,
+            "amount": 500000,
             "existing_liabilities_monthly": 0,
             "purpose": "business",
-            "tenure_months": 12,
+            "tenure_months": 36,
         },
         "compliance_notes": [],
         "errors": [],

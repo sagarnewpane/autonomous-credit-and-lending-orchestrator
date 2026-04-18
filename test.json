@@ -1,56 +1,54 @@
 {
   "application": {
     "citizenship_number": "47-03",
-    "loan_amount_requested": 50000,
+    "loan_amount_requested": 500000,
     "loan_purpose": "business",
-    "requested_tenure": 12,
+    "requested_tenure": 36,
     "status": "compliance_checks_complete"
   },
   "borrower_profile": {
-    "primary_income_source": "REMITTANCE",
-    "total_observed_income": 27700.0,
-    "total_effective_income": 16322.91,
-    "declared_monthly_income": 9000.0,
-    "months_of_data": 4,
-    "informal_income_ratio_%": 100.0,
+    "primary_income_source": "SALARY",
+    "total_observed_income": 87667.05,
+    "total_effective_income": 70067.28,
+    "declared_monthly_income": null,
+    "months_of_data": 10,
+    "informal_income_ratio_%": 27.5,
     "asset_backing": {
-      "has_lalpurja": true,
-      "asset_type": "land",
-      "ownership_documented": true,
-      "land_area": 149.03,
+      "has_lalpurja": false,
+      "asset_type": null,
+      "ownership_documented": false,
+      "land_area": null,
       "plot_number": null,
-      "district": "झापा",
-      "owner_name": "तुलसा अधिकारी",
-      "document_confidence": 1.1
+      "district": null,
+      "owner_name": null,
+      "document_confidence": null
     }
   },
   "score_summary": {
-    "credit_score": 461,
-    "risk_tier": "HIGH",
-    "scoring_confidence": "HIGH",
-    "estimated_monthly_capacity": 16322.91,
-    "income_mismatch_ratio": 0.32,
-    "stability_score": 94.0,
-    "tax_trust_score": 100.0,
+    "credit_score": 660,
+    "risk_tier": "MEDIUM",
+    "scoring_confidence": "MEDIUM",
+    "estimated_monthly_capacity": 70067.28,
+    "income_mismatch_ratio": null,
+    "stability_score": 100.0,
+    "tax_trust_score": 0.0,
     "fraud_flags": [
-      "income_mismatch_low"
+      "income_mismatch_unavailable"
     ],
     "top_risk_drivers": [
-      "Declared income is far below observed cash flow",
-      "Repayment capacity depends heavily on informal income sources"
+      "Declared income evidence is unavailable, so scoring relies on cash-flow behavior"
     ]
   },
   "decision_summary": {
     "final_decision": "APPROVE",
-    "approved_amount": 50000.0,
-    "approved_tenure": 12,
+    "approved_amount": 500000.0,
+    "approved_tenure": 36,
     "decision_reason": "Application meets current v1 compliance thresholds.",
     "nrb_directive_cited": "NRB UD 2080 - advisory hackathon ruleset",
     "modifications_made": [],
     "compliance_flags": []
   },
   "notes": [
-    "ADVISORY: Declared income is materially below observed cash flow.",
-    "INFO: Parser flagged a document mismatch; scorecard classification was applied before final decision."
+    "INFO: Declared income evidence is unavailable; decision relies on transaction behavior and lower confidence."
   ]
 }

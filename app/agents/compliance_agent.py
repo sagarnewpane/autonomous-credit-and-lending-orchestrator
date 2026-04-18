@@ -23,6 +23,8 @@ def check_compliance(state: AgentState):
         compliance_notes.append("WARNING: Citizenship mismatch appears driven by incomplete or low-confidence OCR.")
     if "identity_mismatch_hard" in fraud_flags:
         compliance_notes.append("WARNING: Hard citizenship mismatch detected across documents.")
+    if "income_mismatch_unavailable" in fraud_flags:
+        compliance_notes.append("INFO: Declared income evidence is unavailable; decision relies on transaction behavior and lower confidence.")
     if "income_mismatch_low" in fraud_flags:
         compliance_notes.append("ADVISORY: Declared income is materially below observed cash flow.")
     if "income_mismatch_high" in fraud_flags:
