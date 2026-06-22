@@ -5,81 +5,71 @@ from statistics import mean, median
 
 # Handle both Date and Timestamp formats
 DATE_FORMATS = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d"]
+REFERENCE_MONTHS = 6  # Dataset explicitly covers 6 months (Jan-June 2024)
 
 SOURCE_CONFIG = {
     "remittance_agent": {
         "normalizer": "average_all_months",
-        "base_weight": 0.8,
         "base_confidence": 0.8,
         "requires_recurrence": True,
         "description": "Household support or inward remittance",
     },
     "COOPERATIVE_SALES": {
         "normalizer": "seasonal_average",
-        "base_weight": 0.75,
         "base_confidence": 0.70,
         "requires_recurrence": False,
         "description": "Agricultural or commodity sales via cooperative",
     },
     "agriculture_input": {
         "normalizer": "rolling_average",
-        "base_weight": 0.65,
         "base_confidence": 0.65,
         "requires_recurrence": True,
         "description": "Merchant inflows from agriculture",
     },
     "grocery": {
         "normalizer": "rolling_average",
-        "base_weight": 0.75,
         "base_confidence": 0.75,
         "requires_recurrence": True,
         "description": "Merchant or shop inflows",
     },
     "restaurant": {
         "normalizer": "rolling_average",
-        "base_weight": 0.75,
         "base_confidence": 0.75,
         "requires_recurrence": True,
         "description": "Food service inflows",
     },
     "financial_services": {
         "normalizer": "average_all_months",
-        "base_weight": 0.6,
         "base_confidence": 0.9,
         "requires_recurrence": False,
         "description": "Passive bank interest or financial inflows",
     },
     "medical": {
         "normalizer": "rolling_average",
-        "base_weight": 0.7,
         "base_confidence": 0.7,
         "requires_recurrence": True,
         "description": "Medical service income",
     },
     "transport": {
         "normalizer": "rolling_average",
-        "base_weight": 0.7,
         "base_confidence": 0.7,
         "requires_recurrence": True,
         "description": "Transport service income",
     },
     "telecom": {
         "normalizer": "rolling_average",
-        "base_weight": 0.7,
         "base_confidence": 0.7,
         "requires_recurrence": True,
         "description": "Telecom service income",
     },
     "education": {
         "normalizer": "rolling_average",
-        "base_weight": 0.7,
         "base_confidence": 0.7,
         "requires_recurrence": True,
         "description": "Education service income",
     },
     "utility": {
         "normalizer": "rolling_average",
-        "base_weight": 0.6,
         "base_confidence": 0.6,
         "requires_recurrence": True,
         "description": "Utility service income",
@@ -90,7 +80,6 @@ def parse_date(date_str):
     if not date_str: return None
     for fmt in DATE_FORMATS:
         try:
-            # Split to handle microseconds if they exist
             return datetime.strptime(str(date_str).split(".")[0], fmt)
         except Exception:
             continue
@@ -136,7 +125,6 @@ def normalize_monthly_income(values, normalizer):
     if normalizer == "rolling_average":
         return mean(values[-3:])
     if normalizer == "seasonal_average":
-        # CRITICAL FIX: Divide total annual by 12 to get safe monthly average
         return sum(values) / 12.0
     return mean(values)
 
@@ -179,19 +167,16 @@ def calculate_source_profile(category, transactions, months, extracted_docs):
     confidence_score = clamp((avg_confidence + config["base_confidence"]) / 2)
     recurrence_score = recurrence_ratio if config["requires_recurrence"] else max(recurrence_ratio, 0.45)
     stability_score = clamp((0.6 * recurrence_score) + (0.4 * (1 - min(volatility, 1.0))))
-    weight = clamp(
-        config["base_weight"]
-        * ((0.55 * confidence_score) + (0.45 * stability_score))
-    )
-    effective_income = normalized_income * weight
+
+    # Fix: Divide total raw income by the standard 6-month window
+    total_income = sum(values)
+    monthly_average_raw = round(total_income / REFERENCE_MONTHS, 2)
 
     return {
         "source_type": category,
         "description": config["description"],
-        "monthly_average_raw": round(sum(values) / total_months, 2) if total_months else 0.0,
+        "monthly_average_raw": monthly_average_raw,
         "monthly_usable_income": round(normalized_income, 2),
-        "effective_monthly_income": round(effective_income, 2),
-        "weight": round(weight, 3),
         "confidence_score": round(confidence_score, 3),
         "stability_score": round(stability_score, 3),
         "volatility_cv": round(volatility, 3),
@@ -228,11 +213,12 @@ def generate_income_profile(transactions, extracted_docs=None):
                 extracted_docs,
             )
 
-    total_effective_income = sum(profile["effective_monthly_income"] for profile in source_profiles.values())
+    # Total observed income
     total_observed_income = sum(profile["monthly_usable_income"] for profile in source_profiles.values())
+    
     primary_source = max(
         source_profiles.values(),
-        key=lambda profile: profile["effective_monthly_income"],
+        key=lambda profile: profile["monthly_usable_income"],
         default=None,
     )
 
@@ -242,10 +228,9 @@ def generate_income_profile(transactions, extracted_docs=None):
 
     return {
         "income": {
-            "total_effective_income": round(total_effective_income, 2),
             "total_observed_income": round(total_observed_income, 2),
             "primary_income_source": primary_source["source_type"] if primary_source else None,
-            "primary_income_amount": primary_source["effective_monthly_income"] if primary_source else 0.0,
+            "primary_income_amount": primary_source["monthly_usable_income"] if primary_source else 0.0,
             "monthly_unverified_inflows": uncategorized_monthly,
             "months_of_data": len(months),
         },
@@ -254,12 +239,12 @@ def generate_income_profile(transactions, extracted_docs=None):
             "informal_income_ratio_%": round(
                 (
                     sum(
-                        profile["effective_monthly_income"]
+                        profile["monthly_usable_income"]
                         for source, profile in source_profiles.items()
                         if source != "financial_services"
-                    ) / total_effective_income
+                    ) / total_observed_income
                 ) * 100,
                 1,
-            ) if total_effective_income > 0 else 0.0
+            ) if total_observed_income > 0 else 0.0
         },
     }

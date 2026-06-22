@@ -23,7 +23,6 @@ def build_final_output(state: Dict[str, Any]) -> Dict[str, Any]:
         "borrower_profile": {
             "primary_income_source": income_section.get("primary_income_source"),
             "total_observed_income": income_section.get("total_observed_income"),
-            "total_effective_income": income_section.get("total_effective_income"),
             "declared_monthly_income": document_validation.get("declared_monthly_income"),
             "months_of_data": income_section.get("months_of_data"),
             "informal_income_ratio_%": income_metrics.get("composition", {}).get("informal_income_ratio_%"),

@@ -182,7 +182,7 @@ def generate_risk_indicators(
     NOTE: This function does NOT make decisions or apply NRB rules. 
     It just outputs the numbers for the Score and Compliance Agents."""
     
-    capacity = float(income_profile.get("income", {}).get("total_effective_income", 0))
+    capacity = float(income_profile.get("income", {}).get("total_observed_income", 0))
     
     # Values needed for raw metric calculations
     requested_amount = float(loan_request.get("amount", 0))

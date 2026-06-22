@@ -302,20 +302,19 @@ Computes comprehensive income metrics:
 
 ```python
 {
-  "total_effective_income": float,           # Weighted usable monthly income
-  "effective_monthly_income": float,         # EMI (conservative estimate)
-  "primary_income_source": str,              # Most stable source (e.g., "Salary")
-  "primary_recurrence_ratio": float,         # Consistency of primary source (0-1)
-  "weighted_stability_score": float,         # Cross-source stability (0-1)
-  "combined_volatility_cv": float,           # Income volatility coefficient of variation
-  "informal_income_ratio_pct": float,        # % of income from informal sources
-  "months_of_data": int,                     # Transaction history depth
+  "total_observed_income": float,              # Sum of normalized monthly income from all sources
+  "primary_income_source": str,                # Most stable source (e.g., "Salary")
+  "primary_income_amount": float,              # Monthly income from primary source
+  "monthly_unverified_inflows": float,         # Uncategorized inflows
+  "months_of_data": int,                       # Transaction history depth
   "source_breakdown": {
     "Salary": {
-      "monthly_amount": float,
+      "monthly_average_raw": float,
+      "monthly_usable_income": float,
       "recurrence_ratio": float,
       "volatility_cv": float,
-      "contribution_to_emi": float
+      "confidence_score": float,
+      "stability_score": float
     },
     "Remittance": { /* same structure */ },
     // ... other sources
@@ -477,7 +476,7 @@ The XGBoost model takes 15 features as input:
 
 | # | Feature | Type | Range | Description |
 |---|---------|------|-------|-------------|
-| 1 | `total_effective_income` | float | 10k-250k NPR | Weighted usable monthly income (EMI) |
+| 1 | `total_observed_income` | float | 10k-250k NPR | Sum of normalized monthly income from all sources |
 | 2 | `primary_source_type` | enum | 6 categories | Salary / Remittance / Business / Freelance / Ag / Cooperative |
 | 3 | `primary_recurrence_ratio` | float | 0-1 | Consistency of primary income source |
 | 4 | `weighted_stability_score` | float | 0-1 | Cross-source income stability |
@@ -801,7 +800,7 @@ Full Agent State (all upstream results)
   "risk_tier": "LOW",
   
   "key_metrics": {
-    "effective_monthly_income": 50000,
+    "monthly_usable_income": 50000,
     "declared_monthly_income": 48000,
     "income_mismatch_ratio": 0.96,
     "dti": 0.34,
@@ -983,7 +982,7 @@ from app.agents.income_agent import analyze
 
 state["raw_transactions"] = [...]  # Mock transactions
 result = analyze(state)
-print(f"EMI: {result['income_metrics']['effective_monthly_income']}")
+print(f"Monthly Usable Income: {result['income_metrics']['total_observed_income']}")
 ```
 
 ### Common Issues
