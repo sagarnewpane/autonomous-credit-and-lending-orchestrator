@@ -24,6 +24,7 @@ class AgentState(TypedDict):
     raw_mobile_credit: float
     raw_mobile_debit: float
     source_monthly: Dict[str, Any]
+    anomaly_flags: List[Dict[str, Any]]
 
     # Flow Control
     status: str

@@ -3,6 +3,7 @@ from datetime import datetime
 from app.models.state import AgentState
 from app.services.income_profile_calculations import generate_income_profile
 from app.services.risk_calculations import generate_risk_indicators
+from app.services.remittance_processor import process_remittances
 from app.db.supabase import supabase
 
 # Dictionary Constraints
@@ -20,17 +21,15 @@ def _fetch_applicant_data(applicant_id: str) -> dict:
     coop_sales = supabase.table('cooperative_sales') \
         .select('*').eq('applicant_id', applicant_id).execute().data or []
 
-    # NEW: Fetch utility payments for confidence calculation
+    # FIX: Added bill_amount_nrs to prevent KeyError in source_monthly calculation
     utility_payments = supabase.table('utility_payments') \
-        .select('cumulative_on_time_rate, payment_date_ad') \
+        .select('cumulative_on_time_rate, payment_date_ad, bill_amount_nrs') \
         .eq('applicant_id', applicant_id).execute().data or []
 
-    # NEW: Fetch cooperative member details to check for savings_credit type
     coop_member = supabase.table('cooperative_members') \
         .select('cooperative_type') \
         .eq('applicant_id', applicant_id).execute().data or []
 
-    # NEW: Fetch profile for occupation baseline
     profile = supabase.table('applicant_profiles') \
         .select('occupation_en') \
         .eq('applicant_id', applicant_id).single().execute().data or {}
@@ -49,7 +48,7 @@ def _clean_amount(val):
         return float(val.replace(",", ""))
     return float(val or 0)
 
-def _normalize_mobile_txns(txns: list) -> list:
+def _normalize_mobile_txns(txns: list) -> tuple:
     """Convert mobile_money_transactions rows into income_profile format and filter future dates."""
     txn_type_fallback = {
         'remittance_receipt': 'remittance_agent',
@@ -59,13 +58,13 @@ def _normalize_mobile_txns(txns: list) -> list:
         'wallet_topup': 'grocery',
     }
     normalized = []
+    future_flags = []
     today = datetime.now()
     
     for t in txns:
         date_str = t.get('transaction_date', '')
         parsed_date = None
         
-        # Parse date and filter out future timestamps (2026 noise)
         try:
             parsed_date = datetime.strptime(str(date_str).split(".")[0], "%Y-%m-%d %H:%M:%S")
         except ValueError:
@@ -74,8 +73,7 @@ def _normalize_mobile_txns(txns: list) -> list:
             except ValueError:
                 continue
                 
-        if parsed_date and parsed_date > today:
-            continue  # Skip impossible future transactions
+        is_future = parsed_date and parsed_date > today
             
         direction = (t.get('direction') or '').lower()
         category = (t.get('counterparty_category') or '').lower()
@@ -83,40 +81,27 @@ def _normalize_mobile_txns(txns: list) -> list:
             txn_type = (t.get('transaction_type') or '').lower()
             category = txn_type_fallback.get(txn_type, 'grocery')
 
+        # FIX: If it's a future date, flag it and SKIP adding it to income calculation
+        if is_future:
+            future_flags.append({
+                'transaction_id': t.get('transaction_id', 'unknown'),
+                'date': date_str,
+                'amount': _clean_amount(t.get('amount_nrs', 0)),
+                'direction': direction,
+            })
+            continue  # Do not append to normalized list
+            
         normalized.append({
             'date': date_str,
             'amount': abs(_clean_amount(t.get('amount_nrs', 0))),
             'type': 'CREDIT' if direction == 'credit' else 'DEBIT',
             'category': category,
         })
-    return normalized
-
-def _normalize_remittances(records: list) -> list:
-    """Convert remittance_records rows into income_profile format and clean noise."""
-    normalized = []
-    seen_ids = set()
-    
-    for r in records:
-        rem_id = r.get('remittance_id')
-        if rem_id in seen_ids:
-            continue
-        seen_ids.add(rem_id)
         
-        # Drop impossible exchange rates (e.g., 10x actual. USD is highest at ~133)
-        if r.get('exchange_rate') and float(r['exchange_rate']) > 200:
-            continue
-            
-        normalized.append({
-            'date': r.get('transfer_date_ad', ''),
-            'amount': abs(_clean_amount(r.get('amount_nrs', 0))),
-            'type': 'CREDIT',
-            'category': 'remittance_agent',
-        })
-    return normalized
+    return normalized, future_flags
 
 def _normalize_coop_sales(sales: list, coop_type: str) -> list:
     """Convert cooperative_sales rows into income_profile format."""
-    # CONSTRAINT: savings_credit cooperatives do not have commodity sales.
     if coop_type == 'savings_credit':
         return []
         
@@ -145,16 +130,14 @@ def analyze(state: AgentState):
 
     if applicant_id:
         db_data = _fetch_applicant_data(applicant_id)
-        mobile_txns = _normalize_mobile_txns(db_data['mobile_txns'])
-        remittances = _normalize_remittances(db_data['remittances'])
-        # Pass coop_type to filter out savings_credit
+        mobile_txns, future_flags = _normalize_mobile_txns(db_data['mobile_txns'])
+        remittances, remittance_anomalies = process_remittances(db_data['remittances'])
         coop_sales = _normalize_coop_sales(db_data['coop_sales'], db_data.get('coop_member_type'))
         utility_data = db_data['utility_payments']
         occupation = db_data.get('occupation', 'Unknown')
     else:
-        # Fallback for testing
-        mobile_txns = state.get('raw_transactions', [])
-        remittances = state.get('raw_remittances', [])
+        mobile_txns, future_flags = _normalize_mobile_txns(state.get('raw_transactions', []))
+        remittances, remittance_anomalies = process_remittances(state.get('raw_remittances', []))
         coop_sales = state.get('raw_coop_sales', [])
         utility_data = state.get('utility_payments', [])
         occupation = state.get('occupation', 'Unknown')
@@ -162,7 +145,7 @@ def analyze(state: AgentState):
     extracted_docs = state.get('extracted_docs', {})
     loan_request = state.get('loan_request', {})
 
-        # --- 1. Generate Income Profile ---
+    # --- 1. Generate Income Profile ---
     all_transactions = mobile_txns + remittances + coop_sales
     income_profile = generate_income_profile(all_transactions, extracted_docs)
     
@@ -173,12 +156,10 @@ def analyze(state: AgentState):
     income_flags = []
     
     # --- 2. Anomaly & Bounds Checking ---
-    # Check for impossibly high income (Fraud / AML trigger)
     if estimated_monthly_income > MAX_INCOME:
         income_flags.append("INCOME_ANOMALY_HIGH")
-        estimated_monthly_income = MAX_INCOME  # Cap to schema max, but flag it
+        estimated_monthly_income = MAX_INCOME 
         
-    # Check for zero/low income (Apply baseline)
     if estimated_monthly_income < MIN_INCOME:
         if occupation == 'Farmer': 
             estimated_monthly_income = 20000
@@ -195,13 +176,13 @@ def analyze(state: AgentState):
     if utility_data:
         utility_on_time_rate = float(utility_data[-1].get('cumulative_on_time_rate', 0))
         
-    if active_sources >= 3 and months_of_data >= 5:
+    if active_sources >= 3 and months_of_data >= 6:
         confidence = 0.90
-    elif active_sources == 2 and months_of_data >= 4:
+    elif active_sources >= 2 and months_of_data >= 4:
         confidence = 0.75
-    elif active_sources == 1 and months_of_data >= 3:
+    elif active_sources >= 1 and months_of_data >= 3:
         confidence = 0.55
-    elif active_sources == 1:
+    elif active_sources >= 1:
         confidence = 0.35
     else:
         confidence = 0.05 
@@ -217,22 +198,18 @@ def analyze(state: AgentState):
         if volatility > 0.5:
             confidence -= 0.05
             
-    # CRITICAL: If income is flagged as anomalous, crush the confidence
     if "INCOME_ANOMALY_HIGH" in income_flags:
-        confidence = 0.10  # Very low trust
-        income_flags.append("TRIGGER_AML_REVIEW") # Tell Compliance Agent to check AML
+        confidence = 0.10  
+        income_flags.append("TRIGGER_AML_REVIEW") 
             
-    # Clamp confidence to dictionary bounds (0.05 - 0.97)
     confidence = max(0.05, min(0.97, confidence))
 
     # --- 4. Generate Risk Indicators for Compliance Agent ---
     indicators = generate_risk_indicators(income_profile, extracted_docs, loan_request)
-    
-    # Attach our new flags to the indicators for downstream agents
     indicators["income_flags"] = income_flags
 
     # --- 5. Compute monthly averages by source type ---
-    months_of_data = max(income_profile.get("income", {}).get("months_of_data", 0), 1)
+    REFERENCE_MONTHS = 6
 
     mobile_credit = sum(t['amount'] for t in mobile_txns if t['type'] == 'CREDIT')
     mobile_debit = sum(abs(t['amount']) for t in mobile_txns if t['type'] == 'DEBIT')
@@ -241,27 +218,30 @@ def analyze(state: AgentState):
         "mobile": {
             "total_credit": round(mobile_credit),
             "total_debit": round(mobile_debit),
-            "monthly_avg_credit": round(mobile_credit / months_of_data),
-            "monthly_avg_debit": round(mobile_debit / months_of_data),
+            "monthly_avg_credit": round(mobile_credit / REFERENCE_MONTHS),
+            "monthly_avg_debit": round(mobile_debit / REFERENCE_MONTHS),
             "txn_count": len(mobile_txns),
         },
         "remittance": {
             "total": round(sum(t['amount'] for t in remittances)),
-            "monthly_avg": round(sum(t['amount'] for t in remittances) / months_of_data),
+            "monthly_avg": round(sum(t['amount'] for t in remittances) / REFERENCE_MONTHS),
             "txn_count": len(remittances),
         },
         "cooperative": {
             "total": round(sum(t['amount'] for t in coop_sales)),
-            "monthly_avg": round(sum(t['amount'] for t in coop_sales) / months_of_data),
+            # FIX: Coop sales are annual lump sums. Divide by 12 for an accurate monthly proxy.
+            "monthly_avg": round(sum(t['amount'] for t in coop_sales) / 12), 
             "txn_count": len(coop_sales),
         },
         "utility": {
             "total_billed": round(sum(u.get('bill_amount_nrs', 0) for u in utility_data)),
-            "monthly_avg": round(sum(u.get('bill_amount_nrs', 0) for u in utility_data) / months_of_data) if utility_data else 0,
+            "monthly_avg": round(sum(u.get('bill_amount_nrs', 0) for u in utility_data) / REFERENCE_MONTHS) if utility_data else 0,
             "on_time_rate": round(utility_on_time_rate, 2),
             "record_count": len(utility_data),
         },
     }
+
+    all_anomalies = future_flags + remittance_anomalies
 
     return {
         "income_metrics": income_profile,
@@ -269,5 +249,6 @@ def analyze(state: AgentState):
         "income_agent_monthly_est": estimated_monthly_income,
         "income_confidence": round(confidence, 2),
         "source_monthly": source_monthly,
+        "anomaly_flags": all_anomalies,
         "status": "income_analysis_complete"
     }
