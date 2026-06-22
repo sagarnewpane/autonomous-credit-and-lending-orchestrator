@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000002",
+  "applicant_id": "AP-000002",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Deepak Thapa",
+    "citizenship_number": "044-063-22156",
+    "dob": "1969-04-25",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

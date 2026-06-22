@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-LAL-0000046",
+  "applicant_id": "AP-000046",
+  "document_type": "lalpurja",
+  "fields": {
+    "full_name": "Binod Dahal",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": 4
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

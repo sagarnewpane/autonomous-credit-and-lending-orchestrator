@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000037",
+  "applicant_id": "AP-000037",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Shova Shrestha",
+    "citizenship_number": "059-070-34727",
+    "dob": "1995-09-13",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

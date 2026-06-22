@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-LAL-0000007",
+  "applicant_id": "AP-000007",
+  "document_type": "lalpurja",
+  "fields": {
+    "full_name": "Arjun Bhattarai",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": 7
+  },
+  "ocr_complexity": "easy",
+  "anomaly": true
+}

@@ -11,8 +11,13 @@ router = APIRouter(prefix="/api/v1/loan", tags=["api"])
 
 # Home endpoint for the loan API
 @router.get("/")
-async def home():
-    return {"message": "Hello!"}
+async def home(db: Session = Depends(get_db)):
+    try:
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
+        return {"message": "System all Okay!", "database": "connected"}
+    except Exception:
+        raise HTTPException(status_code=503, detail="Database connection failed")
 
 
 # Endpoint for applying a loan
@@ -97,7 +102,18 @@ async def apply_loan(
 # Endpoint for getting the loan decision decided by the system
 @router.get("/decision/{application_id}")
 async def get_decision(application_id: str):
-    return {"message": f"Loan decision for application {application_id}"}
+    return {
+        "message": f"Loan decision for application {application_id}",
+        "decision": "APPROVE",
+        "approved_amount_npr": 750000,
+        "approved_tenure_months": 36,
+        "credit_score": 742,
+        "risk_tier": "LOW",
+        "customer_explanation": {
+            "en": "Approved for NPR 750,000 over 36 months. Strong income consistency was the key positive factor.",
+            "ne": "तपाईंको आवेदन ३६ महिनाको लागि NPR ७,५०,००० मा स्वीकृत गरिएको छ।"
+        }
+    }
 
 
 # Endpoint for returning the explainability on the decision
@@ -105,7 +121,29 @@ async def get_decision(application_id: str):
 async def explain_decision(application_id: str):
     return {
         "application_id": application_id,
-    }
+        "credit_score": 742,
+        "risk_tier": "LOW",
+        "decision": "APPROVE",
+        "imr": 1.14,
+        "dti": 0.34,
+        "lti": 2.8,
+        "dsr": {
+            "formula": "Total Monthly Debt / Gross Monthly Income",
+            "value": 0.34,
+            "threshold": 0.50
+        },
+        "shap_top_drivers": [
+            { "feature": "weighted_stability_score", "shap_value": 48.2, "direction": "POSITIVE" },
+            { "feature": "tax_trust_score",          "shap_value": 31.7, "direction": "POSITIVE" },
+            { "feature": "imr",                       "shap_value": -8.4, "direction": "NEGATIVE" }
+        ],
+        "factors": [
+            "Consistent income pattern over 12 months",
+            "Valid tax documentation present",
+            "Minor income-document discrepancy detected"
+        ],
+        "compliance_flags": []
+        }
 
 
 # Endpoint for Document Re-upload / Correction
@@ -198,4 +236,13 @@ async def admin_review(
         "application_id": application_id,
         "review_payload": payload,
         "message": "Admin review recorded successfully.",
+    }
+
+# Endpoint for Audit Trail in the Admin Panel
+@router.get("audit/{application_id}")
+async def audit_trail(
+    application_id: str
+):
+    return {
+        "message": f"Audit Trail for {application_id}"
     }

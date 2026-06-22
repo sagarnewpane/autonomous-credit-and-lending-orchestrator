@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-KYC-0000020",
+  "applicant_id": "AP-000020",
+  "document_type": "kyc_form",
+  "fields": {
+    "full_name": "Rajesh Dahal",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "very_hard",
+  "anomaly": false
+}

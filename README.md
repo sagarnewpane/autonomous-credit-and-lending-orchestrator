@@ -25,7 +25,7 @@ Document Agent → Income Agent → Score Agent → Compliance Agent → Decisio
   * Citizenship certificates / Nagrikta (Devanagari + Latin)
   * Tax clearance certificates (IRD)
   * Lalpurja (land ownership documents)
-* Uses a Vision-Language Model as primary OCR engine; Tesseract 5.0 (nep+eng) as fallback
+* Uses Tesseract 5.0 (nep+eng) as  primary OCR engine to extract the texts; a Vision-Language Model then formats the raw text;
 * Cross-validates citizenship numbers across all submitted documents
 * Assigns a `doc_trust_score` (0–1) per application
 * Flags low-confidence extraction for manual review; hard identity mismatches trigger an AML flag
@@ -315,7 +315,7 @@ Returns all past and active loan applications for a user. Used for loan overlap 
 
 ### 6. Compliance Reference Fetcher
 
-**GET** `/api/v1/compliance/references/{application_id}`
+**GET** `/api/v1/loan/compliance/references/{application_id}`
 
 Returns actual NRB directive clauses cited during validation.
 
@@ -335,7 +335,7 @@ Returns actual NRB directive clauses cited during validation.
 
 ### 7. Admin Dashboard
 
-**GET** `/api/v1/loans`
+**GET** `/api/v1/loan/loans`
 
 Returns all applications for the internal banking dashboard.
 
@@ -343,7 +343,7 @@ Returns all applications for the internal banking dashboard.
 
 ### 8. Admin Review (Human-in-the-Loop)
 
-**PATCH** `/api/v1/admin/review/{application_id}`
+**PATCH** `/api/v1/loan/admin/review/{application_id}`
 
 Allows a loan officer or compliance officer to override or confirm an automated decision. All overrides are logged in the audit trail with officer ID and timestamp.
 
@@ -351,9 +351,17 @@ Allows a loan officer or compliance officer to override or confirm an automated 
 
 ### 9. Audit Trail
 
-**GET** `/api/v1/audit/{application_id}`
+**GET** `/api/v1/loan/audit/{application_id}`
 
 Returns the full immutable per-step audit trail for an application. Every agent action is logged with a timestamp and agent identifier. Required for NRB supervisory inspection.
+
+---
+
+### 10. System Check
+
+**GET** `/api/v1/loan/system-check`
+
+Returns the status of the system
 
 ---
 

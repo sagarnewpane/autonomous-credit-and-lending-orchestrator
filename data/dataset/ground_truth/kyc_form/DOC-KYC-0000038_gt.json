@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-KYC-0000038",
+  "applicant_id": "AP-000038",
+  "document_type": "kyc_form",
+  "fields": {
+    "full_name": "Hari Thapa",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

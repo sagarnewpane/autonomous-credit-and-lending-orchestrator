@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000011",
+  "applicant_id": "AP-000011",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Mohan Shrestha",
+    "citizenship_number": "031-072-25713",
+    "dob": "1998-02-22",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "very_hard",
+  "anomaly": false
+}

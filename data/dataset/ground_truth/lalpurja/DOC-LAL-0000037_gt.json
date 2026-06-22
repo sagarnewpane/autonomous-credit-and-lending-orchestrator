@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-LAL-0000037",
+  "applicant_id": "AP-000037",
+  "document_type": "lalpurja",
+  "fields": {
+    "full_name": "Shova Shrestha",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": 15
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

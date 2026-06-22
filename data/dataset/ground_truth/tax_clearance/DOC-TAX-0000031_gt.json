@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000031",
+  "applicant_id": "AP-000031",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Hari Sharma",
+    "citizenship_number": "023-077-19838",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}

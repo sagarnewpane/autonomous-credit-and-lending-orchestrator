@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000019",
+  "applicant_id": "AP-000019",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Mohan Koirala",
+    "citizenship_number": "006-067-72277",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

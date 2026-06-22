@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000042",
+  "applicant_id": "AP-000042",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Rajesh Bhattarai",
+    "citizenship_number": "057-061-85965",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

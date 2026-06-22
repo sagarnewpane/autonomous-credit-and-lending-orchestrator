@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000025",
+  "applicant_id": "AP-000025",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Binod Adhikari",
+    "citizenship_number": "032-063-49529",
+    "dob": "1997-12-27",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

@@ -10,15 +10,16 @@ workflow = StateGraph(AgentState)
 # Add your agents as nodes
 workflow.add_node("parser", parser_node)
 workflow.add_node("income_analyzer", analyze)
-workflow.add_node("score_agent", score_application)
-workflow.add_node("compliance", check_compliance)
+# workflow.add_node("score_agent", score_application)
+# workflow.add_node("compliance", check_compliance)
 
 # Connect them: Parser output flows into Income input
 workflow.set_entry_point("parser")
 workflow.add_edge("parser", "income_analyzer")
-workflow.add_edge("income_analyzer", "score_agent")
-workflow.add_edge("score_agent", "compliance")
-workflow.add_edge("compliance", END)
+# workflow.add_edge("income_analyzer", "score_agent")
+workflow.add_edge("income_analyzer", END)
+# workflow.add_edge("score_agent", "compliance")
+# workflow.add_edge("compliance", END)
 
 app = workflow.compile()
 

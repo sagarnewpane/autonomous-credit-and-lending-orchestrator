@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000033",
+  "applicant_id": "AP-000033",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Kabita Dahal",
+    "citizenship_number": "035-078-15273",
+    "dob": "1996-10-01",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "very_hard",
+  "anomaly": false
+}

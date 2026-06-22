@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000003",
+  "applicant_id": "AP-000003",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Kamala Rai",
+    "citizenship_number": "059-080-57819",
+    "dob": "1966-07-09",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

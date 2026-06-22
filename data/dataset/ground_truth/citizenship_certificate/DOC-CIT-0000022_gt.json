@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000022",
+  "applicant_id": "AP-000022",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Shova Bhattarai",
+    "citizenship_number": "050-073-80545",
+    "dob": "1982-05-25",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}

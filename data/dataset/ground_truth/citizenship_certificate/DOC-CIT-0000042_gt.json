@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000042",
+  "applicant_id": "AP-000042",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Rajesh Bhattarai",
+    "citizenship_number": "057-061-85965",
+    "dob": "1962-05-26",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

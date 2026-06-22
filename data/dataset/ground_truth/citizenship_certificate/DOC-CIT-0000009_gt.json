@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000009",
+  "applicant_id": "AP-000009",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Sunita Karki",
+    "citizenship_number": "014-067-35112",
+    "dob": "1985-12-11",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}

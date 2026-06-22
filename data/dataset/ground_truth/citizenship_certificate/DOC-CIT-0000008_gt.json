@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000008",
+  "applicant_id": "AP-000008",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Sanjay Shrestha",
+    "citizenship_number": "005-070-19287",
+    "dob": "1963-04-03",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

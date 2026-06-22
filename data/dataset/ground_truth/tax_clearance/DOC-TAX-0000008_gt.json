@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000008",
+  "applicant_id": "AP-000008",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Sanjay Shrestha",
+    "citizenship_number": "005-070-19287",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

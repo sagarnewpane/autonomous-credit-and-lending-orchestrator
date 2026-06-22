@@ -1,0 +1,26 @@
+sale_id,applicant_id,cooperative_id,cooperative_type,province_en,district_en,municipality_en,sale_year_bs,season,commodity_en,unit,quantity,rate_nrs_per_unit,total_amount_nrs
+CSALE-AP-000002-00,AP-000002,COOP-KAV-0006,agricultural,Karnali,Surkhet,Birendranagar Municipality,2078,Rabi,Vegetables,kg,69,42,2898
+CSALE-AP-000011-00,AP-000011,COOP-KAV-0007,dairy,Bagmati,Kavrepalanchok,Banepa Municipality,2081,Annual,Milk,L,137,90,12330
+CSALE-AP-000011-01,AP-000011,COOP-KAV-0007,dairy,Bagmati,Kavrepalanchok,Banepa Municipality,2078,Annual,Curd,kg,106,180,19080
+CSALE-AP-000015-00,AP-000015,COOP-KAV-0005,coffee_tea,Karnali,Surkhet,Birendranagar Municipality,2081,Annual,Coffee Beans,kg,255,400,102000
+CSALE-AP-000017-00,AP-000017,COOP-KAV-0007,dairy,Koshi,Jhapa,Mechinagar Municipality,2078,Annual,Curd,kg,1456,180,262080
+CSALE-AP-000019-00,AP-000019,COOP-KAV-0004,vegetable,Sudurpashchim,Kailali,Dhangadhi Sub-Metropolitan City,2081,Rabi,Cabbage,kg,1492,35,52220
+CSALE-AP-000019-01,AP-000019,COOP-KAV-0004,vegetable,Sudurpashchim,Kailali,Dhangadhi Sub-Metropolitan City,2079,Kharif,Tomato,kg,1456,55,80080
+CSALE-AP-000024-00,AP-000024,COOP-KAV-0002,dairy,Karnali,Surkhet,Birendranagar Municipality,2080,Annual,Milk,L,881,90,79290
+CSALE-AP-000024-01,AP-000024,COOP-KAV-0002,dairy,Karnali,Surkhet,Birendranagar Municipality,2078,Annual,Ghee,kg,598,1200,717600
+CSALE-AP-000024-02,AP-000024,COOP-KAV-0002,dairy,Karnali,Surkhet,Birendranagar Municipality,2079,Annual,Milk,L,219,90,19710
+CSALE-AP-000026-00,AP-000026,COOP-JHP-0003,coffee_tea,Sudurpashchim,Kailali,Dhangadhi Sub-Metropolitan City,2080,Annual,Tea Leaves,kg,1208,120,144960
+CSALE-AP-000026-01,AP-000026,COOP-JHP-0003,coffee_tea,Sudurpashchim,Kailali,Dhangadhi Sub-Metropolitan City,2081,Annual,Coffee Beans,kg,373,400,149200
+CSALE-AP-000028-00,AP-000028,COOP-JHP-0001,agricultural,Lumbini,Rupandehi,Siddharthanagar Municipality,2080,Kharif,Maize,kg,277,28,7756
+CSALE-AP-000030-00,AP-000030,COOP-KAV-0007,dairy,Bagmati,Kavrepalanchok,Panauti Municipality,2080,Annual,Milk,L,760,90,68400
+CSALE-AP-000030-01,AP-000030,COOP-KAV-0007,dairy,Bagmati,Kavrepalanchok,Panauti Municipality,2080,Annual,Curd,kg,1314,180,236520
+CSALE-AP-000030-02,AP-000030,COOP-KAV-0007,dairy,Bagmati,Kavrepalanchok,Panauti Municipality,2078,Annual,Ghee,kg,628,1200,753600
+CSALE-AP-000031-00,AP-000031,COOP-JHP-0003,coffee_tea,Bagmati,Kavrepalanchok,Banepa Municipality,2079,Annual,Tea Leaves,kg,1492,120,179040
+CSALE-AP-000032-00,AP-000032,COOP-KAV-0001,agricultural,Madhesh,Sarlahi,Lalbandi Municipality,2080,Kharif,Paddy,kg,774,35,27090
+CSALE-AP-000032-01,AP-000032,COOP-KAV-0001,agricultural,Madhesh,Sarlahi,Lalbandi Municipality,2078,Kharif,Vegetables,kg,1414,42,59388
+CSALE-AP-000040-00,AP-000040,COOP-KAV-0006,agricultural,Karnali,Surkhet,Birendranagar Municipality,2079,Rabi,Wheat,kg,639,32,20448
+CSALE-AP-000041-00,AP-000041,COOP-JHP-0003,coffee_tea,Lumbini,Rupandehi,Siddharthanagar Municipality,2078,Annual,Coffee Beans,kg,466,400,186400
+CSALE-AP-000041-01,AP-000041,COOP-JHP-0003,coffee_tea,Lumbini,Rupandehi,Siddharthanagar Municipality,2079,Annual,Tea Leaves,kg,763,120,91560
+CSALE-AP-000041-02,AP-000041,COOP-JHP-0003,coffee_tea,Lumbini,Rupandehi,Siddharthanagar Municipality,2078,Annual,Coffee Beans,kg,927,400,370800
+CSALE-AP-000045-00,AP-000045,COOP-KAV-0004,vegetable,Karnali,Surkhet,Birendranagar Municipality,2080,Kharif,Tomato,kg,1161,55,63855
+CSALE-AP-000046-00,AP-000046,COOP-KAV-0005,coffee_tea,Karnali,Surkhet,Birendranagar Municipality,2079,Annual,Tea Leaves,kg,1310,120,157200

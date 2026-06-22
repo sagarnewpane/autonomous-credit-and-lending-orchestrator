@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000030",
+  "applicant_id": "AP-000030",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Kabita Poudel",
+    "citizenship_number": "007-064-29555",
+    "dob": "1964-10-21",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}

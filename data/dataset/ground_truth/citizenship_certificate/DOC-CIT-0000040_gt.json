@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000040",
+  "applicant_id": "AP-000040",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Sunita Basnet",
+    "citizenship_number": "049-079-99539",
+    "dob": "1965-10-28",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

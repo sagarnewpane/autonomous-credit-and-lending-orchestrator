@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000022",
+  "applicant_id": "AP-000022",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Shova Bhattarai",
+    "citizenship_number": "050-073-80545",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

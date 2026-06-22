@@ -6,3 +6,5 @@ pyproject.toml
 .uv/
 .python-version
 .env
+data/samples/back2.jpeg
+data/front.jpeg

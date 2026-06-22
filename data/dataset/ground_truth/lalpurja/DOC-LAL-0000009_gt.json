@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-LAL-0000009",
+  "applicant_id": "AP-000009",
+  "document_type": "lalpurja",
+  "fields": {
+    "full_name": "Sunita Karki",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": 1
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

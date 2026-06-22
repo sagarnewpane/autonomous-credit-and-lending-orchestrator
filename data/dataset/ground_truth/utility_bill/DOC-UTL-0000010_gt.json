@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-UTL-0000010",
+  "applicant_id": "AP-000010",
+  "document_type": "utility_bill",
+  "fields": {
+    "full_name": "Suresh Dahal",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}

@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000036",
+  "applicant_id": "AP-000036",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Mohan Karki",
+    "citizenship_number": "019-072-34983",
+    "dob": "1975-08-18",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

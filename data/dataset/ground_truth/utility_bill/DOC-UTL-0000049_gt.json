@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-UTL-0000049",
+  "applicant_id": "AP-000049",
+  "document_type": "utility_bill",
+  "fields": {
+    "full_name": "RAJAN THAPA",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}

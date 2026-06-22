@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000017",
+  "applicant_id": "AP-000017",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Bikash Rai",
+    "citizenship_number": "069-081-97900",
+    "dob": "1987-01-17",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

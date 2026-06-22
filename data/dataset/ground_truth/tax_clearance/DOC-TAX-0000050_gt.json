@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000050",
+  "applicant_id": "AP-000050",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Mohan Tamang",
+    "citizenship_number": "055-061-47700",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000048",
+  "applicant_id": "AP-000048",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Shyam Thapa",
+    "citizenship_number": "014-075-68138",
+    "dob": "1990-07-14",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

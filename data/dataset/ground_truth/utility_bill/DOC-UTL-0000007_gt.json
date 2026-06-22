@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-UTL-0000007",
+  "applicant_id": "AP-000007",
+  "document_type": "utility_bill",
+  "fields": {
+    "full_name": "Arjun Bhattarai",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "very_hard",
+  "anomaly": false
+}

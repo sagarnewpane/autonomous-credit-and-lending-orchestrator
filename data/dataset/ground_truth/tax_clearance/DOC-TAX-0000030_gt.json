@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000030",
+  "applicant_id": "AP-000030",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Kabita Poudel",
+    "citizenship_number": "007-064-29555",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "easy",
+  "anomaly": false
+}

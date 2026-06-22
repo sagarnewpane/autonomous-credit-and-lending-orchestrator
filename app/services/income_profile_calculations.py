@@ -1,70 +1,100 @@
+# income_profile_calculations.py
 from collections import defaultdict
 from datetime import datetime
 from statistics import mean, median
 
-
-DATE_FORMATS = ["%Y-%m-%d"]
+# Handle both Date and Timestamp formats
+DATE_FORMATS = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d"]
 
 SOURCE_CONFIG = {
-    "SALARY": {
-        "normalizer": "median_active",
-        "base_weight": 0.95,
-        "base_confidence": 0.95,
-        "document_boost": 0.05,
-        "requires_recurrence": True,
-        "description": "Regular payroll-like income",
-    },
-    "REMITTANCE": {
+    "remittance_agent": {
         "normalizer": "average_all_months",
         "base_weight": 0.8,
         "base_confidence": 0.8,
-        "document_boost": 0.0,
         "requires_recurrence": True,
         "description": "Household support or inward remittance",
     },
-    "LOCAL_BUSINESS": {
+    "COOPERATIVE_SALES": {
+        "normalizer": "seasonal_average",
+        "base_weight": 0.75,
+        "base_confidence": 0.70,
+        "requires_recurrence": False,
+        "description": "Agricultural or commodity sales via cooperative",
+    },
+    "agriculture_input": {
+        "normalizer": "rolling_average",
+        "base_weight": 0.65,
+        "base_confidence": 0.65,
+        "requires_recurrence": True,
+        "description": "Merchant inflows from agriculture",
+    },
+    "grocery": {
         "normalizer": "rolling_average",
         "base_weight": 0.75,
         "base_confidence": 0.75,
-        "document_boost": 0.05,
         "requires_recurrence": True,
-        "description": "Merchant, QR, or shop inflows",
+        "description": "Merchant or shop inflows",
     },
-    "FREELANCE": {
+    "restaurant": {
         "normalizer": "rolling_average",
-        "base_weight": 0.7,
-        "base_confidence": 0.72,
-        "document_boost": 0.05,
+        "base_weight": 0.75,
+        "base_confidence": 0.75,
         "requires_recurrence": True,
-        "description": "Gig and contract-based income",
+        "description": "Food service inflows",
     },
-    "INTEREST": {
+    "financial_services": {
         "normalizer": "average_all_months",
         "base_weight": 0.6,
         "base_confidence": 0.9,
-        "document_boost": 0.0,
         "requires_recurrence": False,
-        "description": "Passive bank interest inflows",
+        "description": "Passive bank interest or financial inflows",
     },
-    "AGRICULTURE": {
-        "normalizer": "seasonal_average",
-        "base_weight": 0.58,
-        "base_confidence": 0.65,
-        "document_boost": 0.0,
-        "requires_recurrence": False,
-        "description": "Agricultural or cooperative-linked income",
+    "medical": {
+        "normalizer": "rolling_average",
+        "base_weight": 0.7,
+        "base_confidence": 0.7,
+        "requires_recurrence": True,
+        "description": "Medical service income",
+    },
+    "transport": {
+        "normalizer": "rolling_average",
+        "base_weight": 0.7,
+        "base_confidence": 0.7,
+        "requires_recurrence": True,
+        "description": "Transport service income",
+    },
+    "telecom": {
+        "normalizer": "rolling_average",
+        "base_weight": 0.7,
+        "base_confidence": 0.7,
+        "requires_recurrence": True,
+        "description": "Telecom service income",
+    },
+    "education": {
+        "normalizer": "rolling_average",
+        "base_weight": 0.7,
+        "base_confidence": 0.7,
+        "requires_recurrence": True,
+        "description": "Education service income",
+    },
+    "utility": {
+        "normalizer": "rolling_average",
+        "base_weight": 0.6,
+        "base_confidence": 0.6,
+        "requires_recurrence": True,
+        "description": "Utility service income",
     },
 }
 
-
 def parse_date(date_str):
+    if not date_str: return None
     for fmt in DATE_FORMATS:
         try:
-            return datetime.strptime(date_str, fmt)
+            # Split to handle microseconds if they exist
+            return datetime.strptime(str(date_str).split(".")[0], fmt)
         except Exception:
             continue
     return None
-
 
 def get_all_months(transactions):
     months = {
@@ -74,35 +104,27 @@ def get_all_months(transactions):
     }
     return sorted(months)
 
-
 def build_monthly_series(transactions, months):
     monthly = {month: 0.0 for month in months}
-
     for txn in transactions:
         parsed = parse_date(txn.get("date"))
         if not parsed:
             continue
         monthly[parsed.strftime("%Y-%m")] += float(txn.get("amount", 0.0))
-
     return monthly
-
 
 def calculate_volatility(values):
     non_zero = [value for value in values if value > 0]
     if len(non_zero) < 2:
         return 0.0
-
     avg = mean(non_zero)
     if avg == 0:
         return 0.0
-
     variance = sum((value - avg) ** 2 for value in non_zero) / (len(non_zero) - 1)
     return (variance ** 0.5) / avg
 
-
 def clamp(value, minimum=0.0, maximum=1.0):
     return max(minimum, min(maximum, value))
-
 
 def normalize_monthly_income(values, normalizer):
     active = [value for value in values if value > 0]
@@ -114,13 +136,12 @@ def normalize_monthly_income(values, normalizer):
     if normalizer == "rolling_average":
         return mean(values[-3:])
     if normalizer == "seasonal_average":
-        return sum(values) / len(values)
+        # CRITICAL FIX: Divide total annual by 12 to get safe monthly average
+        return sum(values) / 12.0
     return mean(values)
 
-
-def build_verification_notes(source_name, recurrence_ratio, volatility, document_supported):
+def build_verification_notes(source_name, recurrence_ratio, volatility):
     notes = []
-
     if recurrence_ratio >= 0.75:
         notes.append(f"{source_name.title().replace('_', ' ')} appears recurring across observed months")
     elif recurrence_ratio > 0:
@@ -131,17 +152,14 @@ def build_verification_notes(source_name, recurrence_ratio, volatility, document
     elif volatility >= 0.5:
         notes.append("Cash flow is volatile and should be discounted")
 
-    if source_name == "AGRICULTURE":
-        notes.append("Agriculture income is seasonally smoothed before use")
-    if source_name == "REMITTANCE":
+    if source_name == "COOPERATIVE_SALES":
+        notes.append("Agriculture income is seasonally smoothed (Annual / 12) before use")
+    if source_name == "remittance_agent":
         notes.append("Remittance is averaged across the full observation window")
-    if source_name == "LOCAL_BUSINESS":
+    if source_name in ("grocery", "restaurant"):
         notes.append("Business inflows use a rolling average to reduce one-off spikes")
-    if document_supported:
-        notes.append("Tax documents support declared income but are not counted as separate cash flow")
 
     return notes
-
 
 def calculate_source_profile(category, transactions, months, extracted_docs):
     config = SOURCE_CONFIG[category]
@@ -158,16 +176,12 @@ def calculate_source_profile(category, transactions, months, extracted_docs):
         float(txn.get("category_confidence", config["base_confidence"])) for txn in transactions
     ) if transactions else 0.0
 
-    tax_present = bool(extracted_docs.get("features", {}).get("tax_document_present"))
-    document_supported = tax_present and category in {"SALARY", "LOCAL_BUSINESS", "FREELANCE", "INTEREST"}
-
     confidence_score = clamp((avg_confidence + config["base_confidence"]) / 2)
     recurrence_score = recurrence_ratio if config["requires_recurrence"] else max(recurrence_ratio, 0.45)
     stability_score = clamp((0.6 * recurrence_score) + (0.4 * (1 - min(volatility, 1.0))))
     weight = clamp(
         config["base_weight"]
         * ((0.55 * confidence_score) + (0.45 * stability_score))
-        + (config["document_boost"] if document_supported else 0.0)
     )
     effective_income = normalized_income * weight
 
@@ -185,46 +199,15 @@ def calculate_source_profile(category, transactions, months, extracted_docs):
         "months_observed": total_months,
         "recurrence_ratio": round(recurrence_ratio, 3),
         "transaction_count": len(transactions),
-        "document_supported": document_supported,
-        "verification_notes": build_verification_notes(
-            category,
-            recurrence_ratio,
-            volatility,
-            document_supported,
-        ),
+        "verification_notes": build_verification_notes(category, recurrence_ratio, volatility),
     }
-
-
-def build_document_validation(extracted_docs, observed_monthly_income):
-    features = extracted_docs.get("features", {})
-    declared_monthly = features.get("declared_monthly_income")
-    asset_backing = features.get("asset_backing") or {}
-
-    validation = {
-        "tax_document_present": bool(features.get("tax_document_present")),
-        "declared_monthly_income": declared_monthly,
-        "declared_income_used_as_cashflow": False,
-        "observed_monthly_income": round(observed_monthly_income, 2),
-        "income_gap_ratio": None,
-        "asset_backing": asset_backing,
-        "notes": [],
-    }
-
-    if declared_monthly and observed_monthly_income > 0:
-        validation["income_gap_ratio"] = round(declared_monthly / observed_monthly_income, 2)
-        validation["notes"].append("Tax documents are treated as proof, not additional income")
-
-    if asset_backing.get("has_lalpurja"):
-        validation["notes"].append("Lalpurja is captured as asset backing and excluded from income totals")
-
-    return validation
-
 
 def generate_income_profile(transactions, extracted_docs=None):
     extracted_docs = extracted_docs or {}
-    months = get_all_months(transactions)
 
     credit_transactions = [txn for txn in transactions if txn.get("type", "").upper() == "CREDIT"]
+    months = get_all_months(credit_transactions)
+
     categorized = defaultdict(list)
     uncategorized_inflows = []
 
@@ -257,8 +240,6 @@ def generate_income_profile(transactions, extracted_docs=None):
     if uncategorized_inflows and months:
         uncategorized_monthly = round(sum(float(txn.get("amount", 0.0)) for txn in uncategorized_inflows) / len(months), 2)
 
-    document_validation = build_document_validation(extracted_docs, total_observed_income)
-
     return {
         "income": {
             "total_effective_income": round(total_effective_income, 2),
@@ -269,22 +250,16 @@ def generate_income_profile(transactions, extracted_docs=None):
             "months_of_data": len(months),
         },
         "sources": source_profiles,
-        "document_validation": document_validation,
         "composition": {
             "informal_income_ratio_%": round(
                 (
                     sum(
                         profile["effective_monthly_income"]
                         for source, profile in source_profiles.items()
-                        if source != "SALARY"
+                        if source != "financial_services"
                     ) / total_effective_income
                 ) * 100,
                 1,
             ) if total_effective_income > 0 else 0.0
-        },
-        "dedupe": {
-            "tax_documents_counted_as_income": False,
-            "asset_documents_counted_as_income": False,
-            "rule": "Transactions generate income; tax and Lalpurja only validate trust and asset backing.",
         },
     }

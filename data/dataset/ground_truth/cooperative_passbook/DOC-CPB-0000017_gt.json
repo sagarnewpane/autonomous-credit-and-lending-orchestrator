@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CPB-0000017",
+  "applicant_id": "AP-000017",
+  "document_type": "cooperative_passbook",
+  "fields": {
+    "full_name": "Bikash Rai",
+    "citizenship_number": null,
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "medium",
+  "anomaly": false
+}

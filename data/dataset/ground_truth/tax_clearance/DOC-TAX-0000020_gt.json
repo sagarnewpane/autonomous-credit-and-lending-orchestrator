@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-TAX-0000020",
+  "applicant_id": "AP-000020",
+  "document_type": "tax_clearance",
+  "fields": {
+    "full_name": "Rajesh Dahal",
+    "citizenship_number": "068-077-88047",
+    "dob": null,
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "very_hard",
+  "anomaly": false
+}

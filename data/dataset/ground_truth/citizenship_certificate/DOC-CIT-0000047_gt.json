@@ -1,0 +1,13 @@
+{
+  "document_id": "DOC-CIT-0000047",
+  "applicant_id": "AP-000047",
+  "document_type": "citizenship_certificate",
+  "fields": {
+    "full_name": "Shova Limbu",
+    "citizenship_number": "034-061-26614",
+    "dob": "1980-01-06",
+    "land_area_ropani": null
+  },
+  "ocr_complexity": "hard",
+  "anomaly": false
+}
