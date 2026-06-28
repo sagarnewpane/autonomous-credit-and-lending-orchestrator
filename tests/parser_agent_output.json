@@ -1,0 +1,122 @@
+{
+  "citizenship_number": "27-01-71-04532",
+  "agent_source": "document",
+  "features": {
+    "asset_backing": {
+      "has_lalpurja": false,
+      "asset_type": null,
+      "ownership_documented": false,
+      "land_area": null,
+      "plot_number": null,
+      "district": null,
+      "owner_name": null,
+      "document_confidence": null
+    }
+  },
+  "flags": [],
+  "all_citizenship_numbers_found": null,
+  "raw_extracted_data": {
+    "utility_bill": {
+      "document_type": "utility_bill",
+      "status": "verified",
+      "confidence_score": 0.88,
+      "extracted_fields": {
+        "utility_type": "electricity",
+        "provider": "NEA",
+        "consumer_number": "123456789",
+        "customer_name": "BISHNU PRASAD GHIMIRE",
+        "billing_period": "2025-12",
+        "bill_amount": 5102.3,
+        "due_date": null,
+        "payment_status": "unpaid",
+        "payment_date": null,
+        "payment_method": null
+      },
+      "flags": [],
+      "raw_ocr_text": "=== FRONT ===\n| . :\n\n| Say नेपाल विद्युत प्राधिकरण\n\nजै\n\n(७4७%$ वितरण तथा ग्राहक सेवा निर्देशनालय\n\nप्याप, 26\n\n| ELECTRICITY AUTHORITY\n\nDistribution & Consumer Services\n\n__—'siribution & Consumer Services _\n\n| ELECTRICITY BILL\n\nBRANCH: @27-345670001567\n\nBILL MTH&YEAR: 2081/12\n\nBL NO: 78123456\n\nSC NO: 1100345678\n\nCONSUMER ID: 123456789\n\nCATG: DOMESTIC(SA)\npa:\n\nNAME: BISHNU PRASAD GHIMIRE\n\nADDRESS: TTAHARI-2, SUNSARI\n\nAAC TOD Alh. / gal mel \\ | - Se oe Ko af न्द\n\n=== BACK ===\n| 1.00 MTR STS: NOR\nAPPROVED LOAD: 15A\n—_——_—_ a anna rp can\nSo ee RDG: 13567 on\nPREVIOUS RDG: 13045 F 0१०३,\nRECORDED DMD: 5.00 Y a ४८ /\nBILLABLE DMD: 5.20 १ ५०५\nwe BRAN\nENERGY CHARGES: 4022.30\nDEMAND CHARGES: 750.90\nSUBSIDY CHARGES: 0.00\nOTHER CHARGES: 58.80\nMTR RENT AMOUNT: 30.00\nMaas ७: ८: RRB 2 क\nCURRENT AMOUNT: 4852.30\nARREARS AMOUNT: 250.20\n21४0 Sa DAS 6 Ae ee सिसि\nBILL AMOUNT: 5102.30\nINSTALLMENT : Q.80\ner nnn nn EEE\nSBM ID: H2081B18\nThis is computer generated printout.\nFor any queries, please contact your nearest NEA office.",
+      "ocr_engine": "tesseract",
+      "metadata": {
+        "document_id": null,
+        "applicant_id": "TEST-001",
+        "file_path": "samples/electricity.png",
+        "file_format": "png",
+        "page_count": 1,
+        "scan_dpi": 150,
+        "ocr_complexity_tag": "clean",
+        "language_primary": "nepali",
+        "language_secondary": "english",
+        "has_stamp": true,
+        "has_signature": true,
+        "has_handwritten_fields": true,
+        "is_rotated": false,
+        "rotation_angle_degrees": 0.0,
+        "original_rotation_degrees": 0.0,
+        "ocr_model_baseline_cer": null,
+        "verified_by_agent": true,
+        "verification_confidence": 0.88,
+        "anomaly_flag": false
+      }
+    },
+    "kyc_form": {
+      "document_type": "kyc_form",
+      "status": "verified",
+      "confidence_score": 1.2,
+      "extracted_fields": {
+        "customer_id": "9841235",
+        "account_number": "0602345",
+        "full_name_np": "नायः राम बहादुर थापा",
+        "full_name_en": "RAM BAHADUR THAPA",
+        "marital_status": "Mamied",
+        "gender": "Male",
+        "purpose_of_account": "Saving",
+        "permanent_address": {
+          "house_no": "45/बी",
+          "street": "Naya Bazar",
+          "ward_number": "02",
+          "municipality": "Kathmandu Metropolitan City",
+          "district": "Kathmandu"
+        },
+        "present_address": {
+          "house_no": "102",
+          "street": "Shanti Marga",
+          "ward_number": "01",
+          "municipality": "Kirtipur Municipality",
+          "district": "Kathmandu"
+        },
+        "phone_mobile": "985102345",
+        "email": "ram.thapa@example.com",
+        "date_of_birth_ad": "15/08/1994",
+        "date_of_birth_bs": "30/04/2051",
+        "citizenship_number": "27-01-71-04532",
+        "citizenship_place_of_issue": "Kathmandu",
+        "citizenship_date_of_issue": "12/05/2014",
+        "pan_number": "601234567",
+        "nationality": "Nepalese"
+      },
+      "flags": [],
+      "raw_ocr_text": "Global IME Bank\nस्लोबल आइएगई बैंक लि.\nजेन ए्् बितत ' संका हतस प हन सपा\nKNOW YOUR CUSTOMER FORM (INDIVIDUAL)\nग्राहक पहिचान फारम (व्यकतिगत)\nGlobal IME Bank Limited\nKirtipur Branch\nCustomer ID\n9841235\nस्लोवल आइएगई बैक लिसिटेट,\nAccount number\n\n00\n-0]--0602345\nKirtipur Br.\nBranch/शाखा\nनायः\nराम\nबहादुर\nथापा\n(नेनालीमा)\nName :\nRAM\nBAHADUR\nTHAPA\n(In Block Letters)\nMarital Status :\nMamied\nUnmarried\nOthers, Please Specify\nवैवाविक सिनिति\nविवाहित\nअविवाहित\nअन्व,\nGender:\nMale\nFemale\nOthers\nनिडु\nपुरम\nरवी\nअन्त्र,\nPurpose of account:\nSaving\nSalary\nOthers\nखाताको उदेचस\nववत\nतवव\nअग्य,\nPermanent address\nHouse No.\n45/बी\nStreet\nNaya Bazar\nWard No\n02\nस्वावी टेगामा\nघर न.\nटोल\nबा्ड न.\nMetro/Sub Metro/Muni /Gaunpalika\nKathmandu Metropolitan City\nProvince No.\nप्रदेरश न.\n3\nमहानमर / उप-मद्ानगर / नगरमाविका/ माउचानिका\nDistrict\nKathmandu\nZone\nजिल्ला\nBagmati\nअश्चल\nPresent address\nHouse No.\n102\nStreet\nShanti Marga\nWard No\n0१\nहालकोे डेमाना\nघर न.\nटोल\nवाई न.\nMetro/Sub Metro/Muni /Gaunpalika\nKirtipur Municipality\nProvince No.\n3\nमहामगर/ उप-मानगर/ नगरमानिका/गाउपामिका\nप्रेशा प.\nDistrict\nKathmandu\nZone\nBagmati\nनिर्जा\nअफ्चल\nIn case of residing in Rented House\nLandlord's Name\nHari Prasad Sharma\nभाडाको घरया बसोवला गवेको हकमा\nघरवनीकी नाम\nContact No.\nसम्मरक न\n984198 7654\nPhone no.\nResidential\n014331000\nOffice\nnull\nMobile\n98510]2345\nफोन चे.:\nआवायिम\nकार्ीलप\nमोवाहल\nE mail इमेव:\nram.thapa @ example.com\nDate of Birth: A.D.\n15-08-1994\nB.S.\n[30]\n04\n2051\nNationality\nराष्टिवना\nNepalese\nजन्म मिति\nCitizenship Details\nCitizenship no.\n27-01-71-04532\nPlace of issue\nनामरिकवा व\nजारी चने सान\nKathmandu\nनागरिककाको विवरण\nDate of lssue\nवारी विति\n12]-05-20 14\nPassport Details:\nPassport no.\nPC0123456\nPlace of lssue\nराहदानीको विवरण\nराहरानी न.\nआारी जने सान\nKathmandu\nDate of lssue\n[20]\n[20]22\nExpiry date\nवेतबायमाना हने मिति\n19\n1I\n203२\nजारी मिति\nVisa (for Foreign Nationals only): Issue Date\nVisa Validity\nमिसा (विवेसी नामरिकको मावि माव:: नारी विति\nमिसा वहात रहने मिति\nI.D. Card (if applicable):\nID Card No.\nIssuing Authority\nपरियय पय (बर्मा)\nपरिवय पष न.\nजारी जने निकाय\nDate of lssue\nExpiry date\nजारी मिति\nवेतमायमामा हने मिति\nPAN:\n60 1 234567\nPAN not Available\nस्वाई लेवा मध्वा\nस्वाई लेवा सप्वन बेन\nSalaried Employed with:\nNepal Govt.\nPublic Organization\nOthers\nसव्वाता आावद कववारी बन्मा\nमनान सरकार\nता\nhk\n:प!m pahojdwe jas\nV\nJ010व\nगवव।6g\nLawyer\nBusiness\nOthers\nपेबागत /व्बवसानी भपमा\nचाइं्ड ववननहेग्ट\nडोबटर\nइस्विगिवर\nवकिन\nववसाय\nअप्य",
+      "ocr_engine": "paddleocr",
+      "metadata": {
+        "document_id": null,
+        "applicant_id": "TEST-001",
+        "file_path": "samples/kyc.png",
+        "file_format": "png",
+        "page_count": 1,
+        "scan_dpi": 150,
+        "ocr_complexity_tag": "clean",
+        "language_primary": "nepali",
+        "language_secondary": "english",
+        "has_stamp": true,
+        "has_signature": true,
+        "has_handwritten_fields": true,
+        "is_rotated": false,
+        "rotation_angle_degrees": 0.0,
+        "original_rotation_degrees": 0.0,
+        "ocr_model_baseline_cer": null,
+        "verified_by_agent": true,
+        "verification_confidence": 1.2,
+        "anomaly_flag": false
+      }
+    }
+  }
+}

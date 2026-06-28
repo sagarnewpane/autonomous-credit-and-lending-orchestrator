@@ -168,41 +168,35 @@ def analyze(state: AgentState):
         else: 
             estimated_monthly_income = MIN_INCOME
             
-    # --- 3. Calculate Confidence (0.05 - 0.97) ---
-    active_sources = len(income_profile.get("sources", {}))
+        # --- 3. Calculate Confidence (0.05 - 0.97) ---
+    sources = income_profile.get("sources", {})
+    active_sources = len(sources)
     months_of_data = income_profile.get("income", {}).get("months_of_data", 0)
     
     utility_on_time_rate = 0.0
     if utility_data:
         utility_on_time_rate = float(utility_data[-1].get('cumulative_on_time_rate', 0))
         
-    if active_sources >= 3 and months_of_data >= 6:
-        confidence = 0.90
-    elif active_sources >= 2 and months_of_data >= 4:
-        confidence = 0.75
-    elif active_sources >= 1 and months_of_data >= 3:
-        confidence = 0.55
-    elif active_sources >= 1:
-        confidence = 0.35
+    # NEW: Calculate average confidence of the actual sources
+    if active_sources > 0:
+        avg_source_confidence = sum(s["confidence_score"] for s in sources.values()) / active_sources
     else:
-        confidence = 0.05 
-        
+        avg_source_confidence = 0.0
+
+    # NEW: Base confidence is now driven by the actual source quality + months of data
+    if active_sources == 0:
+        confidence = 0.05
+    else:
+        # Weight: 70% source quality, 30% data history (max 1.0)
+        history_score = min(months_of_data / 6, 1.0) 
+        confidence = (avg_source_confidence * 0.7) + (history_score * 0.3)
+
+    # Modifiers (Utility & Volatility) remain the same...
     if utility_on_time_rate >= 0.80:
         confidence += 0.07
+
     elif utility_on_time_rate < 0.50:
         confidence -= 0.10
-        
-    primary_source = income_profile.get("income", {}).get("primary_income_source")
-    if primary_source:
-        volatility = income_profile.get("sources", {}).get(primary_source, {}).get("volatility_cv", 0)
-        if volatility > 0.5:
-            confidence -= 0.05
-            
-    if "INCOME_ANOMALY_HIGH" in income_flags:
-        confidence = 0.10  
-        income_flags.append("TRIGGER_AML_REVIEW") 
-            
-    confidence = max(0.05, min(0.97, confidence))
 
     # --- 4. Generate Risk Indicators for Compliance Agent ---
     indicators = generate_risk_indicators(income_profile, extracted_docs, loan_request)

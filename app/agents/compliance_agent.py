@@ -1,123 +1,138 @@
+# compliance_agent.py
+import re
+import json
+from typing import Dict, List, Any
 from app.models.state import AgentState
-from app.services.final_output_formatter import build_final_output
+from app.db.supabase import supabase
 
+class ComplianceChecker:
+    def __init__(self):
+        self.AGRI_PURPOSES = [
+            "agricultural_input", "agri_land_development", 
+            "livestock_purchase", "irrigation_equipment"
+        ]
+        self.MAX_LTI_AGRI = 36.0
+        self.LOAN_LIMITS = {
+            "basic": 100000,
+            "mid": 500000,
+            "full": float('inf')
+        }
+        print("✅ Compliance Agent initialized. NRB Rules loaded.")
 
-def check_compliance(state: AgentState):
-    extracted_docs = state.get("extracted_docs", {})
-    scorecard = state.get("scorecard", {})
-    compliance_notes = list(state.get("compliance_notes", []) or [])
-    loan_request = state.get("loan_request", {})
+    def _clean_amount(self, amount) -> float:
+        if amount is None: return 0.0
+        if isinstance(amount, str):
+            cleaned = re.sub(r'[^\d.-]', '', amount)
+            return abs(float(cleaned)) if cleaned else 0.0
+        return abs(float(amount))
 
-    fraud_flags = scorecard.get("fraud_flags", [])
-    requested_amount = float(loan_request.get("amount", 500000) or 500000)
-    requested_tenure = int(loan_request.get("tenure_months", 12) or 12)
-    requested_purpose = str(loan_request.get("purpose", "general") or "general")
+    def check_compliance(self, applicant_data: Dict) -> Dict:
+        applicant_id = applicant_data.get("applicant_id", "UNKNOWN")
+        flags = []
+        rule_traces = {}  # For debugging
+        
+        req_amount = self._clean_amount(applicant_data.get("requested_amount_nrs", 0))
+        income = self._clean_amount(applicant_data.get("income_agent_monthly_est", 0))
+        collateral = self._clean_amount(applicant_data.get("collateral_value_nrs", 0))
+        
+        is_blacklisted = str(applicant_data.get("nrb_blacklist_flag", "")).lower() == "true"
+        is_aml_flag = str(applicant_data.get("aml_flag", "")).lower() == "true"
+        kyc_tier = str(applicant_data.get("kyc_tier", "basic")).lower()
+        loan_purpose = str(applicant_data.get("loan_purpose", "")).lower()
+        existing_loans = int(applicant_data.get("existing_loan_count", 0))
 
-    dti = float(scorecard.get("calculated_dti", 0) or 0)
-    lti = float(scorecard.get("calculated_lti", 0) or 0)
-    suggested_amount = float(scorecard.get("suggested_loan_amount", requested_amount) or requested_amount)
-    suggested_tenure = int(scorecard.get("suggested_tenure", requested_tenure) or requested_tenure)
-    credit_score = int(scorecard.get("credit_score", 0) or 0)
+        # 1. NRB-AML-004 & Blacklist
+        rule_traces["blacklist_check"] = {"triggered": is_blacklisted}
+        if is_blacklisted:
+            return {
+                "status": "veto",
+                "compliance_flags": ["NRB_BLACKLIST"],
+                "message": "HARD REJECT: Applicant is on NRB blacklist.",
+                "rule_traces": rule_traces
+            }
 
-    if "identity_mismatch_low_confidence" in fraud_flags:
-        compliance_notes.append("WARNING: Citizenship mismatch appears driven by incomplete or low-confidence OCR.")
-    if "identity_mismatch_hard" in fraud_flags:
-        compliance_notes.append("WARNING: Hard citizenship mismatch detected across documents.")
-    if "income_mismatch_unavailable" in fraud_flags:
-        compliance_notes.append("INFO: Declared income evidence is unavailable; decision relies on transaction behavior and lower confidence.")
-    if "income_mismatch_low" in fraud_flags:
-        compliance_notes.append("ADVISORY: Declared income is materially below observed cash flow.")
-    if "income_mismatch_high" in fraud_flags:
-        compliance_notes.append("ADVISORY: Declared income materially exceeds observed cash flow.")
+        rule_traces["aml_check"] = {"triggered": is_aml_flag}
+        if is_aml_flag:
+            flags.append("AML_FLAGGED")
 
-    final_decision = "APPROVE"
-    approved_amount = requested_amount
-    approved_tenure = requested_tenure
-    decision_reason = "Application meets current v1 compliance thresholds."
-    nrb_directive_cited = "NRB UD 2080 - advisory hackathon ruleset"
-    modifications_made = []
-    compliance_flags = []
+        # 2. NRB-KYC-001
+        max_allowed = self.LOAN_LIMITS.get(kyc_tier, 0)
+        kyc_exceeded = req_amount > max_allowed
+        rule_traces["kyc_limit_check"] = {"tier": kyc_tier, "max_allowed": max_allowed, "requested": req_amount, "triggered": kyc_exceeded}
+        if kyc_exceeded:
+            flags.append("KYC_LIMIT_EXCEEDED")
 
-    if "identity_mismatch_hard" in fraud_flags:
-        final_decision = "REJECT"
-        approved_amount = 0.0
-        decision_reason = "KYC inconsistency indicates a hard identity conflict."
-        nrb_directive_cited = "NRB AML Guidelines"
-        compliance_flags.append("identity_mismatch_hard")
-    elif lti > 5.0:
-        final_decision = "REJECT"
-        approved_amount = 0.0
-        decision_reason = "Requested loan exceeds the 5x annual-income limit."
-        nrb_directive_cited = "NRB UD 2080, Directive 5.1"
-        compliance_flags.append("lti_limit_breach")
-    elif dti > 0.5:
-        final_decision = "REJECT"
-        approved_amount = 0.0
-        decision_reason = "Debt burden exceeds the hard repayment threshold."
-        nrb_directive_cited = "NRB UD 2080, Directive 5.2"
-        compliance_flags.append("dti_hard_breach")
-    elif credit_score < 400 and dti < 0.3:
-        final_decision = "MANUAL_REVIEW"
-        decision_reason = "Model risk is high even though repayment ratios are currently acceptable."
-        compliance_flags.append("model_capacity_conflict")
-    elif dti > 0.4 or suggested_amount < requested_amount or suggested_tenure != requested_tenure:
-        final_decision = "MODIFY"
-        approved_amount = suggested_amount
-        approved_tenure = suggested_tenure
-        decision_reason = "Request has been adjusted to fit conservative repayment thresholds."
-        nrb_directive_cited = "NRB UD 2080, Directive 5.2"
-        if approved_amount != requested_amount:
-            modifications_made.append(
-                f"Reduced amount from {requested_amount:.2f} to {approved_amount:.2f}"
-            )
-        if approved_tenure != requested_tenure:
-            modifications_made.append(
-                f"Extended tenure from {requested_tenure} to {approved_tenure} months"
-            )
+        # 3. NRB-COL-005
+        collateral_required = req_amount > 500000 and collateral <= 0
+        rule_traces["collateral_check"] = {"requested": req_amount, "collateral": collateral, "triggered": collateral_required}
+        if collateral_required:
+            flags.append("COLLATERAL_REQUIRED")
 
-    if requested_purpose.lower() in {"gambling", "illegal", "banned"}:
-        final_decision = "REJECT"
-        approved_amount = 0.0
-        approved_tenure = requested_tenure
-        decision_reason = "Loan purpose is prohibited under the current lending ruleset."
-        nrb_directive_cited = "NRB UD 2080, Directive 4.2"
-        compliance_flags.append("prohibited_purpose")
+        # 4. NRB-LTI-002
+        if loan_purpose in self.AGRI_PURPOSES:
+            lti = req_amount / income if income > 0 else float('inf')
+            lti_exceeded = lti > self.MAX_LTI_AGRI
+            rule_traces["lti_check"] = {"purpose": loan_purpose, "lti": lti, "max_limit": 36.0, "triggered": lti_exceeded}
+            if lti_exceeded:
+                flags.append("LTI_EXCEEDED" if income > 0 else "LTI_INFINITE_NO_INCOME")
+        else:
+            rule_traces["lti_check"] = {"skipped": "Not an agricultural loan"}
 
-    compliance_result = {
-        "requested_loan_amount": requested_amount,
-        "requested_tenure": requested_tenure,
-        "loan_purpose": requested_purpose,
-        "final_decision": final_decision,
-        "approved_amount": round(approved_amount, 2),
-        "approved_tenure": approved_tenure,
-        "decision_reason": decision_reason,
-        "nrb_directive_cited": nrb_directive_cited,
-        "modifications_made": modifications_made,
-        "compliance_flags": compliance_flags,
-        "credit_score": credit_score,
-        "risk_tier": scorecard.get("risk_tier"),
-        "fraud_flags": fraud_flags,
-        "estimated_monthly_capacity": scorecard.get("estimated_monthly_capacity"),
-        "calculated_dti": dti,
-        "calculated_lti": lti,
-        "audit_note": "Compliance decision generated from scorecard output and advisory repayment ratios.",
+        # 5. NRB-SEC-003
+        exposure_warn = existing_loans >= 3
+        rule_traces["exposure_check"] = {"existing_loans": existing_loans, "triggered": exposure_warn}
+        if exposure_warn:
+            flags.append("EXPOSURE_LIMIT_WARN")
+
+        status = "pass" if len(flags) == 0 else "flag"
+        message = "All NRB rules passed." if status == "pass" else f"Application violates {len(flags)} NRB rule(s)."
+
+        return {
+            "status": status,
+            "compliance_flags": flags,
+            "message": message,
+            "rule_traces": rule_traces
+        }
+
+checker = ComplianceChecker()
+
+# ============================================================================
+# LANGGRAPH NODE
+# ============================================================================
+
+def compliance_node(state: AgentState):
+    """LangGraph entry point for Compliance Agent"""
+    applicant_id = state.get("applicant_id")
+    
+    # 1. Fetch static data from DB
+    db_response = supabase.table('scoring_feature_matrix') \
+        .select('requested_amount_nrs, collateral_value_nrs, nrb_blacklist_flag, aml_flag, kyc_tier, loan_purpose, existing_loan_count') \
+        .eq('applicant_id', applicant_id) \
+        .single() \
+        .execute()
+        
+    db_data = db_response.data or {}
+    
+    # 2. Merge DB data with dynamic Income Agent state
+    applicant_data = {
+        **db_data,
+        "applicant_id": applicant_id,
+        "income_agent_monthly_est": state.get("income_agent_monthly_est", 0),
     }
 
-    if extracted_docs.get("flags") and "citizenship_mismatch_across_documents" in extracted_docs.get("flags", []):
-        compliance_notes.append("INFO: Parser flagged a document mismatch; scorecard classification was applied before final decision.")
-
-    final_output = build_final_output(
-        {
-            **state,
-            "compliance_notes": compliance_notes,
-            "compliance_result": compliance_result,
-            "status": "compliance_checks_complete",
-        }
-    )
-
+    # 3. Run rules
+    result = checker.check_compliance(applicant_data)
+    
     return {
-        "compliance_notes": compliance_notes,
-        "compliance_result": compliance_result,
-        "final_output": final_output,
-        "status": "compliance_checks_complete",
+        "compliance_status": result["status"],
+        "compliance_flags": result["compliance_flags"],
+        "compliance_message": result["message"],
+        "debug_info": {
+            "compliance_agent": {
+                "inputs_evaluated": applicant_data,
+                "rule_traces": result.get("rule_traces", {}),
+                "final_status": result["status"],
+                "flags_raised": result["compliance_flags"]
+            }
+        }
     }
