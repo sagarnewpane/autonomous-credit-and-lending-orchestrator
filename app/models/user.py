@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr
@@ -11,9 +12,10 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     id: int
     email: str
+    applicant_id: Optional[str] = None
     is_active: bool = True
     is_admin: bool = False
-    created_at: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 
 class TokenResponse(BaseModel):

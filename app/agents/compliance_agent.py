@@ -1,14 +1,19 @@
 # compliance_agent.py
 import re
 import json
+import sys
+import os
 from typing import Dict, List, Any
 from app.models.state import AgentState
-from app.db.supabase import supabase
+from app.db import db
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+from scripts.etl_master_builder import build_single_master_record
 
 class ComplianceChecker:
     def __init__(self):
         self.AGRI_PURPOSES = [
-            "agricultural_input", "agri_land_development", 
+            "agricultural_input", "agri_land_development",
             "livestock_purchase", "irrigation_equipment"
         ]
         self.MAX_LTI_AGRI = 36.0
@@ -30,16 +35,16 @@ class ComplianceChecker:
         applicant_id = applicant_data.get("applicant_id", "UNKNOWN")
         flags = []
         rule_traces = {}  # For debugging
-        
+
         req_amount = self._clean_amount(applicant_data.get("requested_amount_nrs", 0))
         income = self._clean_amount(applicant_data.get("income_agent_monthly_est", 0))
         collateral = self._clean_amount(applicant_data.get("collateral_value_nrs", 0))
-        
+
         is_blacklisted = str(applicant_data.get("nrb_blacklist_flag", "")).lower() == "true"
         is_aml_flag = str(applicant_data.get("aml_flag", "")).lower() == "true"
         kyc_tier = str(applicant_data.get("kyc_tier", "basic")).lower()
         loan_purpose = str(applicant_data.get("loan_purpose", "")).lower()
-        existing_loans = int(applicant_data.get("existing_loan_count", 0))
+        existing_loans = int(applicant_data.get("existing_loan_count", 0) or 0)
 
         # 1. NRB-AML-004 & Blacklist
         rule_traces["blacklist_check"] = {"triggered": is_blacklisted}
@@ -103,36 +108,67 @@ checker = ComplianceChecker()
 def compliance_node(state: AgentState):
     """LangGraph entry point for Compliance Agent"""
     applicant_id = state.get("applicant_id")
-    
-    # 1. Fetch static data from DB
-    db_response = supabase.table('scoring_feature_matrix') \
-        .select('requested_amount_nrs, collateral_value_nrs, nrb_blacklist_flag, aml_flag, kyc_tier, loan_purpose, existing_loan_count') \
-        .eq('applicant_id', applicant_id) \
-        .single() \
-        .execute()
-        
-    db_data = db_response.data or {}
-    
-    # 2. Merge DB data with dynamic Income Agent state
+    application_id = state.get("application_id")
+
+    # Build applicant_data from state for compliance checks
     applicant_data = {
-        **db_data,
         "applicant_id": applicant_id,
-        "income_agent_monthly_est": state.get("income_agent_monthly_est", 0),
+        "requested_amount_nrs": state.get("loan_request", {}).get("amount"),
+        "income_agent_monthly_est": state.get("income_agent_monthly_est"),
+        "collateral_value_nrs": state.get("loan_request", {}).get("collateral_value_nrs"),
+        "nrb_blacklist_flag": state.get("loan_request", {}).get("nrb_blacklist_flag"),
+        "aml_flag": state.get("loan_request", {}).get("aml_flag"),
+        "kyc_tier": state.get("loan_request", {}).get("kyc_tier"),
+        "loan_purpose": state.get("loan_request", {}).get("loan_purpose"),
+        "existing_loan_count": state.get("loan_request", {}).get("existing_loan_count"),
     }
 
-    # 3. Run rules
+    # 4. Run rules
     result = checker.check_compliance(applicant_data)
+
+    # Save compliance results to database immediately
+    if application_id:
+        try:
+            db.table("loan_applications").eq("application_id", application_id).update({
+                "compliance_status": result["status"],
+                "compliance_flags": result["compliance_flags"],
+            })
+        except Exception as e:
+            print(f"[Compliance Agent] DB Save Error for {application_id}: {e}")
+
+    # ============================================
+    # 5. BUILD MASTER RECORD (AFTER compliance save)
+    # ============================================
+    master_record = None
+    master_error = None
     
+    try:
+        # Pass the current state so master builder has all needed IDs
+        # Also include income data from state in case DB fetch fails
+        enriched_state = {
+            **state,
+            "compliance_status": result["status"],
+            "compliance_flags": result["compliance_flags"],
+        }
+        master_record = build_single_master_record(enriched_state)
+    except Exception as e:
+        master_error = str(e)
+        print(f"[Compliance Agent] ❌ MASTER TABLE BUILD FAILED: {e}")
+        # DON'T silently fail - add to debug info so it's visible
+
     return {
         "compliance_status": result["status"],
         "compliance_flags": result["compliance_flags"],
         "compliance_message": result["message"],
+        "master_record_built": master_record is not None,
+        "master_build_error": master_error,  # NEW: Track this error
         "debug_info": {
             "compliance_agent": {
                 "inputs_evaluated": applicant_data,
                 "rule_traces": result.get("rule_traces", {}),
                 "final_status": result["status"],
-                "flags_raised": result["compliance_flags"]
+                "flags_raised": result["compliance_flags"],
+                "master_table_status": "built" if master_record else f"FAILED: {master_error}"
             }
         }
     }

@@ -11,7 +11,7 @@ from app.services.user_service import get_user_by_id
 security = HTTPBearer()
 
 
-async def get_current_user(
+def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ) -> dict[str, Any]:
     token = credentials.credentials
@@ -42,7 +42,7 @@ async def get_current_user(
     return user
 
 
-async def get_current_admin_user(
+def get_current_admin_user(
     current_user: dict[str, Any] = Depends(get_current_user),
 ) -> dict[str, Any]:
     if not current_user.get("is_admin", False):
@@ -59,6 +59,6 @@ async def get_optional_user(
     if not credentials:
         return None
     try:
-        return await get_current_user(credentials)
+        return get_current_user(credentials)
     except HTTPException:
         return None

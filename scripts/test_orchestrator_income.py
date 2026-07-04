@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
 import random
-from app.db.supabase import supabase
+from app.db import supabase
 from app.services.orchestrator import app as workflow
 
 

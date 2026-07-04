@@ -47,7 +47,7 @@ def get_db() -> Generator:
     if SessionLocal is None:
         raise RuntimeError(
             "Direct database connection not available. "
-            "Set DB_URL or use the Supabase client."
+            "Set DB_URL environment variable."
         )
     with SessionLocal() as session:
         yield session
