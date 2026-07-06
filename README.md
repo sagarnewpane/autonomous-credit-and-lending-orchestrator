@@ -1,7 +1,7 @@
 # Dhago — Autonomous Credit & Lending Orchestrator
 Team ZeroShot
 
-<h2 align="center">Team</h2>
+<h2 align="center">Event photo</h2>
 
 <p align="center">
   <img src="Team_Z.jpg" alt="Team" width="300">
