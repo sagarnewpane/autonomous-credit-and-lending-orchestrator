@@ -1,7 +1,11 @@
 # Dhago — Autonomous Credit & Lending Orchestrator
 Team ZeroShot
 
-![Team](Team_Z.jpg)
+<h2 align="center">Team</h2>
+
+<p align="center">
+  <img src="Team_Z.jpg" alt="Team" width="800">
+</p>
 
 > **Built for the GIBL AI/ML Hackathon 2026 — Track A**
 > *Aligning with Nepal Rastra Bank (NRB) Unified Directives 2080*
