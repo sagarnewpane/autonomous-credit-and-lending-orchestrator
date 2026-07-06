@@ -4,7 +4,7 @@ Team ZeroShot
 <h2 align="center">Team</h2>
 
 <p align="center">
-  <img src="Team_Z.jpg" alt="Team" width="800">
+  <img src="Team_Z.jpg" alt="Team" width="300">
 </p>
 
 > **Built for the GIBL AI/ML Hackathon 2026 — Track A**
