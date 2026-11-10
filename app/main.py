@@ -22,6 +22,7 @@ logging.basicConfig(
 
 logger = logging.getLogger("app")
 
+# Vercel sets VERCEL=1, which selects the file-backed DB and the writable /tmp audit log.
 app = FastAPI(
     title="Autonomous Credit & Lending Orchestrator",
     docs_url=None if os.getenv("ENVIRONMENT") == "production" else "/docs",

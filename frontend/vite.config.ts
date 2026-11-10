@@ -11,6 +11,7 @@ export default defineConfig({
 				runes: ({ filename }) =>
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
+			// Pin the serverless runtime so local Node versions do not affect Vercel builds.
 			adapter: adapter({ runtime: 'nodejs22.x' })
 		})
 	]
