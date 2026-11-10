@@ -1,0 +1,500 @@
+{
+  "n_train": 17954,
+  "n_early_stop": 4489,
+  "n_test": 9747,
+  "n_features": 32,
+  "n_monotone": 7,
+  "n_income_stage_features": 14,
+  "n_profile_flags": 4,
+  "default_rate_train": 0.0282,
+  "default_rate_test": 0.0292,
+  "n_test_defaults": 285,
+  "label": "outcome == 'defaulted' (synthetic), approved or conditional loans only",
+  "instalment_to_income_baseline_missing_value": 10.0,
+  "models": {
+    "generator credit score (reference)": {
+      "auc": 0.6692,
+      "auc_95ci": [
+        0.639,
+        0.697
+      ],
+      "ks": 0.2635
+    },
+    "generator default probability (reference)": {
+      "auc": 0.6943,
+      "auc_95ci": [
+        0.665,
+        0.723
+      ],
+      "ks": 0.3067
+    },
+    "instalment-to-income only": {
+      "auc": 0.6118,
+      "auc_95ci": [
+        0.579,
+        0.648
+      ],
+      "ks": 0.1995
+    },
+    "logistic regression": {
+      "auc": 0.6336,
+      "auc_95ci": [
+        0.6,
+        0.665
+      ],
+      "ks": 0.2236,
+      "brier": 0.02826,
+      "log_loss": 0.12959,
+      "ece_10bins": 0.00584,
+      "mean_pd": 0.02818,
+      "observed_rate": 0.02924
+    },
+    "gradient boosting, unconstrained": {
+      "auc": 0.6381,
+      "auc_95ci": [
+        0.609,
+        0.667
+      ],
+      "ks": 0.2014,
+      "brier": 0.02818,
+      "log_loss": 0.12877,
+      "ece_10bins": 0.00372,
+      "mean_pd": 0.02793,
+      "observed_rate": 0.02924
+    },
+    "gradient boosting, monotone": {
+      "auc": 0.6297,
+      "auc_95ci": [
+        0.596,
+        0.662
+      ],
+      "ks": 0.1949,
+      "brier": 0.02819,
+      "log_loss": 0.12907,
+      "ece_10bins": 0.00289,
+      "mean_pd": 0.02793,
+      "observed_rate": 0.02924,
+      "best_iteration": 60
+    },
+    "released model": {
+      "auc": 0.6387,
+      "auc_95ci": [
+        0.608,
+        0.669
+      ],
+      "ks": 0.205,
+      "brier": 0.02818,
+      "log_loss": 0.12875,
+      "ece_10bins": 0.00293,
+      "mean_pd": 0.02788,
+      "observed_rate": 0.02924
+    }
+  },
+  "ablations": {
+    "without wallet": {
+      "auc": 0.6365,
+      "auc_95ci": [
+        0.604,
+        0.667
+      ],
+      "ks": 0.2033,
+      "brier": 0.02817,
+      "log_loss": 0.12876,
+      "ece_10bins": 0.00445,
+      "mean_pd": 0.02794,
+      "observed_rate": 0.02924
+    },
+    "without remittance": {
+      "auc": 0.6365,
+      "auc_95ci": [
+        0.605,
+        0.668
+      ],
+      "ks": 0.2004,
+      "brier": 0.02818,
+      "log_loss": 0.12886,
+      "ece_10bins": 0.00468,
+      "mean_pd": 0.02806,
+      "observed_rate": 0.02924
+    },
+    "without cooperative": {
+      "auc": 0.6278,
+      "auc_95ci": [
+        0.596,
+        0.658
+      ],
+      "ks": 0.188,
+      "brier": 0.0282,
+      "log_loss": 0.12919,
+      "ece_10bins": 0.00456,
+      "mean_pd": 0.02791,
+      "observed_rate": 0.02924
+    },
+    "without utility": {
+      "auc": 0.6299,
+      "auc_95ci": [
+        0.6,
+        0.66
+      ],
+      "ks": 0.1912,
+      "brier": 0.02822,
+      "log_loss": 0.1293,
+      "ece_10bins": 0.00423,
+      "mean_pd": 0.02801,
+      "observed_rate": 0.02924
+    },
+    "without bureau": {
+      "auc": 0.6331,
+      "auc_95ci": [
+        0.602,
+        0.664
+      ],
+      "ks": 0.1978,
+      "brier": 0.02818,
+      "log_loss": 0.12891,
+      "ece_10bins": 0.00479,
+      "mean_pd": 0.0279,
+      "observed_rate": 0.02924
+    },
+    "without Income-stage features": {
+      "auc": 0.6207,
+      "auc_95ci": [
+        0.591,
+        0.652
+      ],
+      "ks": 0.1986,
+      "brier": 0.02825,
+      "log_loss": 0.12974,
+      "ece_10bins": 0.00447,
+      "mean_pd": 0.02801,
+      "observed_rate": 0.02924
+    },
+    "without profile flags": {
+      "auc": 0.6318,
+      "auc_95ci": [
+        0.598,
+        0.662
+      ],
+      "ks": 0.198,
+      "brier": 0.02818,
+      "log_loss": 0.12898,
+      "ece_10bins": 0.00409,
+      "mean_pd": 0.028,
+      "observed_rate": 0.02924
+    },
+    "without Income-stage features and profile flags": {
+      "auc": 0.5759,
+      "auc_95ci": [
+        0.541,
+        0.604
+      ],
+      "ks": 0.1353,
+      "brier": 0.02833,
+      "log_loss": 0.13116,
+      "ece_10bins": 0.00479,
+      "mean_pd": 0.02813,
+      "observed_rate": 0.02924
+    },
+    "with protected attributes added": {
+      "auc": 0.6324,
+      "auc_95ci": [
+        0.601,
+        0.662
+      ],
+      "ks": 0.1916,
+      "brier": 0.02819,
+      "log_loss": 0.12904,
+      "ece_10bins": 0.00355,
+      "mean_pd": 0.02797,
+      "observed_rate": 0.02924
+    }
+  },
+  "paired_auc_differences": {
+    "monotone minus without wallet": {
+      "diff": -0.0068,
+      "ci95": [
+        -0.0114,
+        -0.0021
+      ]
+    },
+    "monotone minus without remittance": {
+      "diff": -0.0067,
+      "ci95": [
+        -0.0272,
+        0.0134
+      ]
+    },
+    "monotone minus without cooperative": {
+      "diff": 0.002,
+      "ci95": [
+        -0.0053,
+        0.0084
+      ]
+    },
+    "monotone minus without utility": {
+      "diff": -0.0001,
+      "ci95": [
+        -0.0107,
+        0.0091
+      ]
+    },
+    "monotone minus without bureau": {
+      "diff": -0.0034,
+      "ci95": [
+        -0.01,
+        0.0031
+      ]
+    },
+    "monotone minus without Income-stage features": {
+      "diff": 0.009,
+      "ci95": [
+        -0.0058,
+        0.0249
+      ]
+    },
+    "monotone minus without profile flags": {
+      "diff": -0.002,
+      "ci95": [
+        -0.0066,
+        0.0029
+      ]
+    },
+    "monotone minus without Income-stage features and profile flags": {
+      "diff": 0.0539,
+      "ci95": [
+        0.0212,
+        0.0926
+      ]
+    },
+    "with protected minus monotone": {
+      "diff": 0.0026,
+      "ci95": [
+        -0.0034,
+        0.0083
+      ]
+    },
+    "monotone minus logistic": {
+      "diff": -0.0039,
+      "ci95": [
+        -0.022,
+        0.0158
+      ]
+    },
+    "unconstrained minus monotone": {
+      "diff": 0.0084,
+      "ci95": [
+        0.0019,
+        0.015
+      ]
+    },
+    "released minus monotone": {
+      "diff": 0.009,
+      "ci95": [
+        -0.0001,
+        0.0184
+      ]
+    },
+    "released minus logistic": {
+      "diff": 0.0051,
+      "ci95": [
+        -0.0124,
+        0.0239
+      ]
+    },
+    "generator score minus released": {
+      "diff": 0.0305,
+      "ci95": [
+        0.0019,
+        0.058
+      ]
+    }
+  },
+  "timing": {
+    "record_window": [
+      "2024-01-01",
+      "2024-06-30"
+    ],
+    "loans_applied_before_window_share": 0.711712,
+    "application_date_range": [
+      "2022-10-17",
+      "2024-04-13"
+    ],
+    "heldout_defaults_before_window_end_share": 0.687719,
+    "auc_by_default_timing": {
+      "before the window": {
+        "defaults": 88,
+        "monotone": 0.6261,
+        "without Income-stage features and profile flags": 0.6026
+      },
+      "during the window": {
+        "defaults": 108,
+        "monotone": 0.6304,
+        "without Income-stage features and profile flags": 0.5696
+      },
+      "after the window": {
+        "defaults": 89,
+        "monotone": 0.6326,
+        "without Income-stage features and profile flags": 0.557
+      }
+    }
+  },
+  "secondary_label_default_or_delinquent": {
+    "auc": 0.65,
+    "auc_95ci": [
+      0.627,
+      0.673
+    ],
+    "ks": 0.231,
+    "brier": 0.05527,
+    "log_loss": 0.21858,
+    "ece_10bins": 0.00568,
+    "mean_pd": 0.05651,
+    "observed_rate": 0.05992
+  },
+  "strategy_curve": [
+    {
+      "pd_threshold": 0.01,
+      "share_below": 0.0,
+      "default_rate_below": null,
+      "default_rate_above": 0.0292
+    },
+    {
+      "pd_threshold": 0.015,
+      "share_below": 0.075,
+      "default_rate_below": 0.0096,
+      "default_rate_above": 0.0308
+    },
+    {
+      "pd_threshold": 0.02,
+      "share_below": 0.3655,
+      "default_rate_below": 0.0163,
+      "default_rate_above": 0.0367
+    },
+    {
+      "pd_threshold": 0.025,
+      "share_below": 0.5663,
+      "default_rate_below": 0.0197,
+      "default_rate_above": 0.0416
+    },
+    {
+      "pd_threshold": 0.03,
+      "share_below": 0.6784,
+      "default_rate_below": 0.0213,
+      "default_rate_above": 0.0459
+    },
+    {
+      "pd_threshold": 0.04,
+      "share_below": 0.8152,
+      "default_rate_below": 0.0235,
+      "default_rate_above": 0.0544
+    },
+    {
+      "pd_threshold": 0.05,
+      "share_below": 0.9127,
+      "default_rate_below": 0.026,
+      "default_rate_above": 0.0635
+    },
+    {
+      "pd_threshold": 0.06,
+      "share_below": 0.967,
+      "default_rate_below": 0.0275,
+      "default_rate_above": 0.0807
+    },
+    {
+      "pd_threshold": 0.08,
+      "share_below": 0.9986,
+      "default_rate_below": 0.0289,
+      "default_rate_above": 0.2857
+    },
+    {
+      "pd_threshold": 0.1,
+      "share_below": 1.0,
+      "default_rate_below": 0.0292,
+      "default_rate_above": null
+    }
+  ],
+  "calibration_deciles": [
+    {
+      "mean_pd": 0.01432,
+      "observed_rate": 0.01128,
+      "n": 975
+    },
+    {
+      "mean_pd": 0.01625,
+      "observed_rate": 0.01436,
+      "n": 975
+    },
+    {
+      "mean_pd": 0.01783,
+      "observed_rate": 0.01848,
+      "n": 974
+    },
+    {
+      "mean_pd": 0.01969,
+      "observed_rate": 0.01949,
+      "n": 975
+    },
+    {
+      "mean_pd": 0.02188,
+      "observed_rate": 0.02872,
+      "n": 975
+    },
+    {
+      "mean_pd": 0.02452,
+      "observed_rate": 0.0308,
+      "n": 974
+    },
+    {
+      "mean_pd": 0.02858,
+      "observed_rate": 0.03077,
+      "n": 975
+    },
+    {
+      "mean_pd": 0.03455,
+      "observed_rate": 0.03183,
+      "n": 974
+    },
+    {
+      "mean_pd": 0.04326,
+      "observed_rate": 0.04821,
+      "n": 975
+    },
+    {
+      "mean_pd": 0.05792,
+      "observed_rate": 0.05846,
+      "n": 975
+    }
+  ],
+  "released_feature_gain_share": {
+    "remittance_monthly_avg": 0.139,
+    "remittance_receiving": 0.1139,
+    "remittance_regularity_score": 0.0654,
+    "existing_loan_count": 0.0439,
+    "loan_to_annual_income": 0.0386,
+    "instalment_to_income": 0.0343,
+    "cooperative_member": 0.0335,
+    "collateral_coverage": 0.0334,
+    "cooperative_monthly_sales": 0.0306,
+    "utility_avg_bill_nrs": 0.0277,
+    "land_area_ropani": 0.0273,
+    "has_esewa_account": 0.0267,
+    "esewa_tx_count_6months": 0.0254,
+    "collateral_value_nrs": 0.025,
+    "income_confidence": 0.0247,
+    "education_level": 0.0244,
+    "has_khalti_account": 0.0227,
+    "monthly_income_est": 0.0227,
+    "util_arrears_total_nrs": 0.0225,
+    "credit_bureau_score": 0.0223,
+    "requested_amount_nrs": 0.0216,
+    "coop_tenure_years": 0.0215,
+    "overall_on_time_rate": 0.0214,
+    "occupation_en": 0.0207,
+    "loan_purpose": 0.0205,
+    "esewa_net_monthly": 0.0198,
+    "household_size": 0.0187,
+    "kyc_tier": 0.0183,
+    "requested_tenure_months": 0.0175,
+    "income_signal_count": 0.0158
+  }
+}

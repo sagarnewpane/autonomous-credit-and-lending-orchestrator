@@ -1,0 +1,62 @@
+{
+  "n_train": 69865,
+  "n_heldout": 30135,
+  "label_distribution": {
+    "refer": 0.6349,
+    "conditional": 0.2368,
+    "approve": 0.0851,
+    "reject": 0.0432
+  },
+  "trees": [
+    {
+      "max_depth": 1,
+      "leaves": 2,
+      "heldout_accuracy": 0.6419,
+      "heldout_macro_f1": 0.3308
+    },
+    {
+      "max_depth": 2,
+      "leaves": 4,
+      "heldout_accuracy": 0.8234,
+      "heldout_macro_f1": 0.6032
+    },
+    {
+      "max_depth": 3,
+      "leaves": 7,
+      "heldout_accuracy": 0.8788,
+      "heldout_macro_f1": 0.8431
+    },
+    {
+      "max_depth": 4,
+      "leaves": 12,
+      "heldout_accuracy": 0.9353,
+      "heldout_macro_f1": 0.9186
+    },
+    {
+      "max_depth": 5,
+      "leaves": 18,
+      "heldout_accuracy": 0.9773,
+      "heldout_macro_f1": 0.9769
+    },
+    {
+      "max_depth": 6,
+      "leaves": 22,
+      "heldout_accuracy": 0.9999,
+      "heldout_macro_f1": 0.9997
+    },
+    {
+      "max_depth": 8,
+      "leaves": 22,
+      "heldout_accuracy": 0.9999,
+      "heldout_macro_f1": 0.9997
+    },
+    {
+      "max_depth": 10,
+      "leaves": 22,
+      "heldout_accuracy": 0.9999,
+      "heldout_macro_f1": 0.9997
+    }
+  ],
+  "two_fields_depth6_accuracy": 0.8491,
+  "depth3_rules": "|--- organiser_income_confidence <= 0.411\n|   |--- organiser_credit_score <= 449.500\n|   |   |--- class: reject\n|   |--- organiser_credit_score >  449.500\n|   |   |--- organiser_income_confidence <= 0.280\n|   |   |   |--- class: reject\n|   |   |--- organiser_income_confidence >  0.280\n|   |   |   |--- class: refer\n|--- organiser_income_confidence >  0.411\n|   |--- compliance_flagged <= 0.500\n|   |   |--- organiser_income_confidence <= 0.550\n|   |   |   |--- class: conditional\n|   |   |--- organiser_income_confidence >  0.550\n|   |   |   |--- class: approve\n|   |--- compliance_flagged >  0.500\n|   |   |--- organiser_income_confidence <= 0.590\n|   |   |   |--- class: refer\n|   |   |--- organiser_income_confidence >  0.590\n|   |   |   |--- class: approve\n"
+}

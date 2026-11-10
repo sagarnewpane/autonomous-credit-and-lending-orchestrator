@@ -1,0 +1,141 @@
+# Lending policy checks applied before any model score is used.
+#
+# Every rule records where it comes from:
+#   provenance: hackathon_rule     reproduces the simulated policy in the hackathon's
+#                                  Track A data manual. These are NOT Nepal Rastra Bank
+#                                  clauses, even where the manual uses "NRB-" codes.
+#   provenance: hackathon_field    uses a screening result supplied with the Track A data.
+#   provenance: regulator_reported modelled on an NRB rule as reported in the press; check it
+#                                  against the current Unified Directive before production use.
+#   provenance: design             a design choice of this prototype.
+#
+# action: veto    -> decline, scoring is skipped
+#         refer   -> manual review by a credit officer
+#         flag    -> recorded; may turn an approval into a conditional approval
+# if_missing (flag_true checks): the action when the screening field has no value
+#         (default refer), so a missing screening result is never treated as a pass.
+#
+# Changing this file changes policy_version (a hash of the file), which is written to
+# the audit log with every decision.
+
+version_label: "2026-11-10"
+
+assumptions:
+  # Used only to convert the requested principal into a monthly instalment for the
+  # affordability check. Illustrative, not a pricing policy.
+  annual_interest_rate_for_affordability: 0.14
+
+rules:
+  - id: BLACKLIST
+    description: Applicant is on the credit blacklist.
+    check: flag_true
+    field: nrb_blacklist_flag
+    action: veto
+    if_missing: refer       # no screening result: manual review, never a pass
+    provenance: hackathon_field
+    source: >-
+      Track A field nrb_blacklist_flag (simulated screening result). A production system
+      would query the Credit Information Bureau; not implemented.
+    source_status: simulated
+
+  - id: AML_SCREEN
+    description: Screening returned a possible AML or sanctions match.
+    check: flag_true
+    field: aml_flag
+    action: refer
+    if_missing: refer
+    provenance: hackathon_field
+    source: >-
+      Track A field aml_flag (simulated screening result). No sanctions, PEP or FIU-Nepal
+      screening is implemented in this prototype.
+    source_status: simulated
+
+  - id: KYC_TIER_LIMIT
+    description: Requested amount exceeds the ceiling for the applicant's KYC tier.
+    check: max_amount_by_tier
+    field: kyc_tier
+    default_tier: basic
+    params:
+      basic: 100000
+      mid: 500000
+      full: null          # no ceiling
+    action: refer
+    provenance: hackathon_rule
+    source: "Track A data manual, rule NRB-KYC-001 (simulated policy)"
+    source_status: simulated
+
+  - id: COLLATERAL_REQUIRED
+    description: Loans above the threshold need collateral.
+    check: collateral_required_above
+    params:
+      amount_threshold: 500000
+    action: refer
+    provenance: hackathon_rule
+    source: "Track A data manual, rule NRB-COL-005 (simulated policy)"
+    source_status: simulated
+
+  - id: AGRI_LOAN_TO_INCOME
+    description: Agricultural loan exceeds 36 times observed monthly income.
+    check: loan_to_monthly_income_above
+    params:
+      max_multiple: 36
+      purposes: [agricultural_input, livestock_purchase, agri_land_development, irrigation_equipment]
+    action: refer
+    provenance: hackathon_rule
+    source: "Track A data manual, rule NRB-LTI-002 (simulated policy)"
+    source_status: simulated
+
+  - id: EXISTING_LOANS
+    description: Applicant already has three or more loans.
+    check: existing_loans_at_least
+    params:
+      count: 3
+    action: flag
+    provenance: design
+    source: >-
+      Our reading of rule NRB-SEC-003 (single-borrower sector exposure limit) in the Track A
+      data manual, which gives no threshold; three or more existing loans is our choice.
+    source_status: design
+
+  - id: DSTI_CAP
+    description: >-
+      Monthly debt service, including the new instalment, exceeds 50% of observed monthly
+      income.
+    check: dsti_above
+    params:
+      max_ratio: 0.50
+    action: refer
+    provenance: regulator_reported
+    source: >-
+      Modelled on NRB's cap of 50% debt service to gross income for personal, home and
+      hire-purchase term loans, as reported by Republica and ShareSansar (2019). Applied here
+      to every request as a design choice, and to observed rather than verified gross income.
+    source_url: https://myrepublica.nagariknetwork.com/news/no-personal-loans-with-installment-higher-than-50-of-income-nrb
+    source_status: secondary
+
+  - id: INCOME_MISMATCH
+    description: >-
+      Declared monthly income differs from observed income by more than the allowed band
+      (IMR = declared / observed).
+    check: imr_outside
+    params:
+      low: 0.3
+      high: 3.0
+      high_if_remittance_household: 5.0
+      remittance_share_threshold: 0.5
+    action: refer
+    provenance: design
+    source: "Design choice; thresholds studied in experiments/e3_imr_simulation.py"
+    source_status: design
+
+# How the Decision Agent combines policy results, the PD estimate and income evidence.
+# The model never declines an application on its own: declines come only from a veto rule.
+decision:
+  min_income_confidence: 0.40     # below this the file is thin: refer, never decline
+  pd_approve_max: 0.025           # PD below this: approve (if no rule fired)
+  pd_conditional_max: 0.05        # PD below this: conditional approval at a reduced amount
+                                  # PD at or above this: refer to a credit officer
+  conditional_amount_factor: 0.85
+  counter_offer_max_tenure_months: 60
+  # Illustrative rates by risk grade, used only to fill the API response; not a pricing policy.
+  illustrative_rates_pct: {A: 11.0, B: 12.5, C: 14.0, D: 15.5, E: 17.0}

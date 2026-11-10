@@ -1,0 +1,370 @@
+{
+  "n": 30135,
+  "decision_mix": {
+    "refer": 0.769736,
+    "approve": 0.155932,
+    "conditional": 0.06962,
+    "decline": 0.004712
+  },
+  "compliance_mix": {
+    "refer": 0.705326,
+    "pass": 0.281334,
+    "flag": 0.008628,
+    "veto": 0.004712
+  },
+  "rule_trigger_rates": {
+    "BLACKLIST": 0.004712,
+    "AML_SCREEN": 0.007632,
+    "KYC_TIER_LIMIT": 0.167181,
+    "COLLATERAL_REQUIRED": 0.004314,
+    "AGRI_LOAN_TO_INCOME": 0.238162,
+    "EXISTING_LOANS": 0.027543,
+    "DSTI_CAP": 0.590941,
+    "INCOME_MISMATCH": 0.0
+  },
+  "thin_file_share": 0.163,
+  "thin_file_decisions_new": {
+    "refer": 4889,
+    "decline": 23
+  },
+  "thin_file_rejected_by_hackathon_rule": 4912,
+  "organiser_label_vs_new_decision": {
+    "approve": {
+      "approve": 1390,
+      "conditional": 2389,
+      "refer": 907,
+      "reject": 13
+    },
+    "conditional": {
+      "approve": 246,
+      "conditional": 850,
+      "refer": 928,
+      "reject": 74
+    },
+    "decline": {
+      "approve": 0,
+      "conditional": 0,
+      "refer": 0,
+      "reject": 142
+    },
+    "refer": {
+      "approve": 936,
+      "conditional": 3936,
+      "refer": 17292,
+      "reject": 1032
+    }
+  },
+  "with_outcomes": {
+    "n": 9747,
+    "default_rate_by_decision": {
+      "approve": {
+        "mean": 0.01773,
+        "count": 3779
+      },
+      "conditional": {
+        "mean": 0.023723,
+        "count": 1096
+      },
+      "refer": {
+        "mean": 0.039409,
+        "count": 4872
+      }
+    }
+  },
+  "groups": {
+    "gender": {
+      "female": {
+        "n": 12311,
+        "approve_or_conditional": 0.2328,
+        "refer": 0.762651,
+        "decline": 0.004549,
+        "thin_file": 0.161969,
+        "n_outcomes": 4071,
+        "auc": 0.630392,
+        "mean_pd": 0.027924,
+        "observed_default": 0.02702
+      },
+      "male": {
+        "n": 17824,
+        "approve_or_conditional": 0.220545,
+        "refer": 0.77463,
+        "decline": 0.004825,
+        "thin_file": 0.163712,
+        "n_outcomes": 5676,
+        "auc": 0.643894,
+        "mean_pd": 0.027851,
+        "observed_default": 0.030832
+      }
+    },
+    "rural_urban": {
+      "rural": {
+        "n": 7497,
+        "approve_or_conditional": 0.230225,
+        "refer": 0.764306,
+        "decline": 0.005469,
+        "thin_file": 0.1674,
+        "n_outcomes": 2477,
+        "auc": 0.6676,
+        "mean_pd": 0.027642,
+        "observed_default": 0.027856
+      },
+      "semi_urban": {
+        "n": 11157,
+        "approve_or_conditional": 0.228198,
+        "refer": 0.766962,
+        "decline": 0.00484,
+        "thin_file": 0.163843,
+        "n_outcomes": 3568,
+        "auc": 0.638795,
+        "mean_pd": 0.02796,
+        "observed_default": 0.029709
+      },
+      "urban": {
+        "n": 11481,
+        "approve_or_conditional": 0.219929,
+        "refer": 0.775978,
+        "decline": 0.004094,
+        "thin_file": 0.159307,
+        "n_outcomes": 3702,
+        "auc": 0.619731,
+        "mean_pd": 0.027967,
+        "observed_default": 0.029714
+      }
+    },
+    "province": {
+      "Bagmati": {
+        "n": 8202,
+        "approve_or_conditional": 0.222994,
+        "refer": 0.771641,
+        "decline": 0.005365,
+        "thin_file": 0.168861,
+        "n_outcomes": 2645,
+        "auc": 0.672801,
+        "mean_pd": 0.028198,
+        "observed_default": 0.024197
+      },
+      "Gandaki": {
+        "n": 3273,
+        "approve_or_conditional": 0.223342,
+        "refer": 0.770547,
+        "decline": 0.006111,
+        "thin_file": 0.166819,
+        "n_outcomes": 1008,
+        "auc": 0.657724,
+        "mean_pd": 0.027784,
+        "observed_default": 0.025794
+      },
+      "Karnali": {
+        "n": 1369,
+        "approve_or_conditional": 0.224251,
+        "refer": 0.769905,
+        "decline": 0.005844,
+        "thin_file": 0.17458,
+        "n_outcomes": 431,
+        "auc": 0.674766,
+        "mean_pd": 0.02745,
+        "observed_default": 0.039443
+      },
+      "Koshi": {
+        "n": 5343,
+        "approve_or_conditional": 0.222721,
+        "refer": 0.772974,
+        "decline": 0.004305,
+        "thin_file": 0.153659,
+        "n_outcomes": 1715,
+        "auc": 0.694862,
+        "mean_pd": 0.027908,
+        "observed_default": 0.025656
+      },
+      "Lumbini": {
+        "n": 5291,
+        "approve_or_conditional": 0.228879,
+        "refer": 0.768097,
+        "decline": 0.003024,
+        "thin_file": 0.161973,
+        "n_outcomes": 1769,
+        "auc": 0.60118,
+        "mean_pd": 0.028062,
+        "observed_default": 0.033917
+      },
+      "Madhesh": {
+        "n": 3841,
+        "approve_or_conditional": 0.232492,
+        "refer": 0.763343,
+        "decline": 0.004166,
+        "thin_file": 0.15699,
+        "n_outcomes": 1275,
+        "auc": 0.608021,
+        "mean_pd": 0.027806,
+        "observed_default": 0.037647
+      },
+      "Sudurpashchim": {
+        "n": 2816,
+        "approve_or_conditional": 0.225852,
+        "refer": 0.768821,
+        "decline": 0.005327,
+        "thin_file": 0.163707,
+        "n_outcomes": 904,
+        "auc": 0.578062,
+        "mean_pd": 0.026977,
+        "observed_default": 0.028761
+      }
+    },
+    "occupation": {
+      "Artisan": {
+        "n": 1864,
+        "approve_or_conditional": 0.22103,
+        "refer": 0.778433,
+        "decline": 0.000536,
+        "thin_file": 0.171674,
+        "n_outcomes": 577,
+        "auc": 0.540507,
+        "mean_pd": 0.02628,
+        "observed_default": 0.02253
+      },
+      "Business Owner": {
+        "n": 1155,
+        "approve_or_conditional": 0.24329,
+        "refer": 0.751515,
+        "decline": 0.005195,
+        "thin_file": 0.160173,
+        "n_outcomes": 417,
+        "auc": 0.644098,
+        "mean_pd": 0.027341,
+        "observed_default": 0.033573
+      },
+      "Daily Wage Worker": {
+        "n": 5193,
+        "approve_or_conditional": 0.217408,
+        "refer": 0.777008,
+        "decline": 0.005584,
+        "thin_file": 0.160601,
+        "n_outcomes": 1539,
+        "auc": 0.706991,
+        "mean_pd": 0.0267,
+        "observed_default": 0.025341
+      },
+      "Driver": {
+        "n": 285,
+        "approve_or_conditional": 0.235088,
+        "refer": 0.757895,
+        "decline": 0.007018,
+        "thin_file": 0.14386,
+        "n_outcomes": 102,
+        "auc": 0.576531,
+        "mean_pd": 0.028548,
+        "observed_default": 0.039216
+      },
+      "Farmer": {
+        "n": 10086,
+        "approve_or_conditional": 0.228634,
+        "refer": 0.766111,
+        "decline": 0.005255,
+        "thin_file": 0.160817,
+        "n_outcomes": 3269,
+        "auc": 0.644043,
+        "mean_pd": 0.027657,
+        "observed_default": 0.031508
+      },
+      "Government Employee": {
+        "n": 1466,
+        "approve_or_conditional": 0.229877,
+        "refer": 0.76603,
+        "decline": 0.004093,
+        "thin_file": 0.165757,
+        "n_outcomes": 525,
+        "auc": 0.677383,
+        "mean_pd": 0.029069,
+        "observed_default": 0.026667
+      },
+      "Nurse/Health Worker": {
+        "n": 291,
+        "approve_or_conditional": 0.257732,
+        "refer": 0.738832,
+        "decline": 0.003436,
+        "thin_file": 0.123711,
+        "n_outcomes": 104,
+        "auc": 0.367647,
+        "mean_pd": 0.028728,
+        "observed_default": 0.019231
+      },
+      "Remittance Dependent": {
+        "n": 2379,
+        "approve_or_conditional": 0.229929,
+        "refer": 0.764187,
+        "decline": 0.005885,
+        "thin_file": 0.166877,
+        "n_outcomes": 757,
+        "auc": 0.632226,
+        "mean_pd": 0.028242,
+        "observed_default": 0.036988
+      },
+      "Service Worker": {
+        "n": 2977,
+        "approve_or_conditional": 0.222372,
+        "refer": 0.773933,
+        "decline": 0.003695,
+        "thin_file": 0.16258,
+        "n_outcomes": 983,
+        "auc": 0.628085,
+        "mean_pd": 0.029081,
+        "observed_default": 0.02645
+      },
+      "Small Trader": {
+        "n": 4002,
+        "approve_or_conditional": 0.222389,
+        "refer": 0.773363,
+        "decline": 0.004248,
+        "thin_file": 0.166917,
+        "n_outcomes": 1320,
+        "auc": 0.613118,
+        "mean_pd": 0.02873,
+        "observed_default": 0.026515
+      },
+      "Teacher": {
+        "n": 437,
+        "approve_or_conditional": 0.208238,
+        "refer": 0.787185,
+        "decline": 0.004577,
+        "thin_file": 0.187643,
+        "n_outcomes": 154,
+        "auc": 0.5724,
+        "mean_pd": 0.030181,
+        "observed_default": 0.045455
+      }
+    }
+  },
+  "top_driver": {
+    "share_by_feature": {
+      "remittance_monthly_avg": 0.899983,
+      "existing_loan_count": 0.07327,
+      "collateral_coverage": 0.01699,
+      "utility_avg_bill_nrs": 0.007632,
+      "cooperative_monthly_sales": 0.00083,
+      "remittance_regularity_score": 0.000564
+    },
+    "no_transfer_company_remittance_is_top_risk_driver": 0.593363
+  },
+  "dsti_and_referrals": {
+    "referred_with_dsti_triggered": 0.764097,
+    "referred_only_because_of_dsti": 0.283411,
+    "decision_mix_without_dsti": {
+      "refer": 0.551585,
+      "conditional": 0.22814,
+      "approve": 0.215563,
+      "decline": 0.004712
+    }
+  },
+  "dsti_applicable_share": 0.849444,
+  "dsti_trigger_rate_if_true_income_is_k_times_observed": {
+    "1": 0.695875,
+    "1.5": 0.61372,
+    "2": 0.556528,
+    "3": 0.475154,
+    "5": 0.365966
+  },
+  "median_observed_monthly_income": 3691.0,
+  "median_observed_monthly_income_if_positive": 5577.0,
+  "share_without_observed_income": 0.150556,
+  "median_requested_amount": 150000.0
+}

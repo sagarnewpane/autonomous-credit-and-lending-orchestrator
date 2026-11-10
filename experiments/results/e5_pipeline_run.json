@@ -1,0 +1,30 @@
+{
+  "n": 300,
+  "table_load_seconds": 4.8,
+  "all_finished_with_decision": true,
+  "decision_mix": {
+    "refer": 227,
+    "approve": 53,
+    "conditional": 19,
+    "decline": 1
+  },
+  "agreement_with_batch_decisions": 1.0,
+  "max_abs_pd_difference_vs_batch": 5e-06,
+  "audit_chain": {
+    "ok": true,
+    "entries": 1203,
+    "first_bad_seq": null,
+    "head": "7ec318baccbba43d255a6b1a1d9140f4e6939a502d6b28d43c39abed74ed1784"
+  },
+  "audit_entries_per_application": 4.0,
+  "audit_entries_note": "includes one warm-up application; an application declined by a veto has 3 entries (scoring is skipped)",
+  "latency_ms": {
+    "total_median": 181.0,
+    "total_p95": 221.3,
+    "income_node_median": 145.2,
+    "compliance_node_median": 8.7,
+    "scoring_node_median": 13.3,
+    "decision_node_median": 6.4
+  },
+  "note": "In-process times on a 2-vCPU container with in-memory tables; excludes database, network, OCR and LLM calls."
+}

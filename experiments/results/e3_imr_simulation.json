@@ -1,0 +1,302 @@
+{
+  "assumptions": {
+    "visibility_means": {
+      "S1 all income visible": {
+        "salaried": 1.0,
+        "remittance": 1.0,
+        "agriculture": 1.0,
+        "other informal": 1.0
+      },
+      "S2 moderate gap": {
+        "salaried": 0.9,
+        "remittance": 0.85,
+        "agriculture": 0.6,
+        "other informal": 0.5
+      },
+      "S3 large gap": {
+        "salaried": 0.8,
+        "remittance": 0.7,
+        "agriculture": 0.4,
+        "other informal": 0.3
+      }
+    },
+    "beta_concentration": 12.0,
+    "honest_noise_sigma": 0.2,
+    "prevalence_overstate": 0.05,
+    "prevalence_understate": 0.02,
+    "thresholds": {
+      "low": 0.3,
+      "high": 3.0,
+      "high_remittance": 5.0
+    },
+    "min_observed_income": 1000,
+    "seed": 20261110
+  },
+  "population": {
+    "applicants": 100000,
+    "imr_not_computable": 20019,
+    "imr_not_computable_share": 0.20019,
+    "not_computable_by_type": {
+      "other informal": 10207,
+      "agriculture": 5665,
+      "remittance": 2877,
+      "salaried": 1270
+    },
+    "type_mix_computable": {
+      "remittance": 0.649879,
+      "other informal": 0.208437,
+      "agriculture": 0.117403,
+      "salaried": 0.024281
+    }
+  },
+  "scenarios": {
+    "S1 all income visible": [
+      {
+        "income_type": "salaried",
+        "n": 1942,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.559524,
+        "detect_understatement": 0.391304,
+        "flag_rate": 0.033471,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "remittance",
+        "n": 51978,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.0,
+        "detect_understatement": 0.49285,
+        "flag_rate": 0.009947,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "agriculture",
+        "n": 9390,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.569593,
+        "detect_understatement": 0.488372,
+        "flag_rate": 0.03951,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "other informal",
+        "n": 16671,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.562144,
+        "detect_understatement": 0.488304,
+        "flag_rate": 0.03959,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "all",
+        "n": 79981,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.200149,
+        "detect_understatement": 0.488499,
+        "flag_rate": 0.020167,
+        "precision_of_flags": 1.0
+      }
+    ],
+    "S2 moderate gap": [
+      {
+        "income_type": "salaried",
+        "n": 1942,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.585859,
+        "detect_understatement": 0.408163,
+        "flag_rate": 0.040165,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "remittance",
+        "n": 51978,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.216102,
+        "detect_understatement": 0.411067,
+        "flag_rate": 0.018796,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "agriculture",
+        "n": 9390,
+        "false_flag_rate_honest": 0.051615,
+        "detect_overstatement": 0.886792,
+        "detect_understatement": 0.191589,
+        "flag_rate": 0.097231,
+        "precision_of_flags": 0.508215
+      },
+      {
+        "income_type": "other informal",
+        "n": 16671,
+        "false_flag_rate_honest": 0.152692,
+        "detect_overstatement": 0.956229,
+        "detect_understatement": 0.123457,
+        "flag_rate": 0.195069,
+        "precision_of_flags": 0.274293
+      },
+      {
+        "income_type": "all",
+        "n": 79981,
+        "false_flag_rate_honest": 0.037797,
+        "detect_overstatement": 0.466158,
+        "detect_understatement": 0.323327,
+        "flag_rate": 0.065266,
+        "precision_of_flags": 0.461877
+      }
+    ],
+    "S3 large gap": [
+      {
+        "income_type": "salaried",
+        "n": 1942,
+        "false_flag_rate_honest": 0.001643,
+        "detect_overstatement": 0.784091,
+        "detect_understatement": 0.25,
+        "flag_rate": 0.04068,
+        "precision_of_flags": 0.962025
+      },
+      {
+        "income_type": "remittance",
+        "n": 51978,
+        "false_flag_rate_honest": 0.000352,
+        "detect_overstatement": 0.421273,
+        "detect_understatement": 0.284499,
+        "flag_rate": 0.027377,
+        "precision_of_flags": 0.988053
+      },
+      {
+        "income_type": "agriculture",
+        "n": 9390,
+        "false_flag_rate_honest": 0.357839,
+        "detect_overstatement": 0.97732,
+        "detect_understatement": 0.05914,
+        "flag_rate": 0.383919,
+        "precision_of_flags": 0.134535
+      },
+      {
+        "income_type": "other informal",
+        "n": 16671,
+        "false_flag_rate_honest": 0.617034,
+        "detect_overstatement": 0.991879,
+        "detect_understatement": 0.080745,
+        "flag_rate": 0.626057,
+        "precision_of_flags": 0.084411
+      },
+      {
+        "income_type": "all",
+        "n": 79981,
+        "false_flag_rate_honest": 0.170808,
+        "detect_overstatement": 0.616806,
+        "detect_understatement": 0.216437,
+        "flag_rate": 0.194346,
+        "precision_of_flags": 0.183222
+      }
+    ]
+  },
+  "threshold_sensitivity": [
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 2.0,
+      "false_flag_rate_honest": 2.7e-05,
+      "detect_overstatement": 0.300968,
+      "false_flag_other_informal": 0.000129
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 3.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.200149,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 4.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.092376,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 5.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.0,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 6.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.0,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 2.0,
+      "false_flag_rate_honest": 0.139951,
+      "detect_overstatement": 0.496677,
+      "false_flag_other_informal": 0.506988
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 3.0,
+      "false_flag_rate_honest": 0.037797,
+      "detect_overstatement": 0.466158,
+      "false_flag_other_informal": 0.152692
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 4.0,
+      "false_flag_rate_honest": 0.011491,
+      "detect_overstatement": 0.420871,
+      "false_flag_other_informal": 0.049107
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 5.0,
+      "false_flag_rate_honest": 0.003942,
+      "detect_overstatement": 0.361802,
+      "false_flag_other_informal": 0.017469
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 6.0,
+      "false_flag_rate_honest": 0.001507,
+      "detect_overstatement": 0.204529,
+      "false_flag_other_informal": 0.006729
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 2.0,
+      "false_flag_rate_honest": 0.274496,
+      "detect_overstatement": 0.624692,
+      "false_flag_other_informal": 0.900303
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 3.0,
+      "false_flag_rate_honest": 0.170808,
+      "detect_overstatement": 0.616806,
+      "false_flag_other_informal": 0.617034
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 4.0,
+      "false_flag_rate_honest": 0.101427,
+      "detect_overstatement": 0.597831,
+      "false_flag_other_informal": 0.391877
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 5.0,
+      "false_flag_rate_honest": 0.062277,
+      "detect_overstatement": 0.57171,
+      "false_flag_other_informal": 0.250791
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 6.0,
+      "false_flag_rate_honest": 0.039621,
+      "detect_overstatement": 0.424593,
+      "false_flag_other_informal": 0.163492
+    }
+  ]
+}

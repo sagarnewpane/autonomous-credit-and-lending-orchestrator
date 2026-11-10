@@ -1,0 +1,741 @@
+{
+  "data": {
+    "applicants": 100000,
+    "applications": 100000,
+    "splits": {
+      "train": 69865,
+      "val": 25634,
+      "public_test": 4501
+    },
+    "organiser_label_share": {
+      "refer": 0.63489,
+      "conditional": 0.23678,
+      "approve": 0.08512,
+      "reject": 0.04321
+    },
+    "loans_with_outcomes": 32190,
+    "outcome_share": {
+      "repaid": 0.941193,
+      "delinquent": 0.03032,
+      "defaulted": 0.028487
+    },
+    "wallet_transactions": {
+      "rows": 2273817,
+      "applicants": 68710
+    },
+    "remittances": {
+      "rows": 203312,
+      "applicants": 35973
+    },
+    "utility_payments": {
+      "rows": 1023855,
+      "applicants": 97840
+    },
+    "cooperative_sales_rows": 48923
+  },
+  "e1_best_tree": {
+    "max_depth": 6,
+    "leaves": 22,
+    "heldout_accuracy": 0.9999,
+    "heldout_macro_f1": 0.9997
+  },
+  "e1_two_fields_accuracy": 0.8491,
+  "e2_split": {
+    "n_train": 17954,
+    "n_early_stop": 4489,
+    "n_test": 9747,
+    "n_test_defaults": 285
+  },
+  "e2_auc": {
+    "generator credit score (reference)": [
+      0.6692,
+      [
+        0.639,
+        0.697
+      ]
+    ],
+    "generator default probability (reference)": [
+      0.6943,
+      [
+        0.665,
+        0.723
+      ]
+    ],
+    "instalment-to-income only": [
+      0.6118,
+      [
+        0.579,
+        0.648
+      ]
+    ],
+    "logistic regression": [
+      0.6336,
+      [
+        0.6,
+        0.665
+      ]
+    ],
+    "gradient boosting, unconstrained": [
+      0.6381,
+      [
+        0.609,
+        0.667
+      ]
+    ],
+    "gradient boosting, monotone": [
+      0.6297,
+      [
+        0.596,
+        0.662
+      ]
+    ],
+    "released model": [
+      0.6387,
+      [
+        0.608,
+        0.669
+      ]
+    ]
+  },
+  "e2_ablation_auc": {
+    "without wallet": [
+      0.6365,
+      [
+        0.604,
+        0.667
+      ]
+    ],
+    "without remittance": [
+      0.6365,
+      [
+        0.605,
+        0.668
+      ]
+    ],
+    "without cooperative": [
+      0.6278,
+      [
+        0.596,
+        0.658
+      ]
+    ],
+    "without utility": [
+      0.6299,
+      [
+        0.6,
+        0.66
+      ]
+    ],
+    "without bureau": [
+      0.6331,
+      [
+        0.602,
+        0.664
+      ]
+    ],
+    "without Income-stage features": [
+      0.6207,
+      [
+        0.591,
+        0.652
+      ]
+    ],
+    "without profile flags": [
+      0.6318,
+      [
+        0.598,
+        0.662
+      ]
+    ],
+    "without Income-stage features and profile flags": [
+      0.5759,
+      [
+        0.541,
+        0.604
+      ]
+    ],
+    "with protected attributes added": [
+      0.6324,
+      [
+        0.601,
+        0.662
+      ]
+    ]
+  },
+  "e2_released_calibration": {
+    "brier": 0.02818,
+    "ece_10bins": 0.00293,
+    "mean_pd": 0.02788,
+    "observed_rate": 0.02924
+  },
+  "e2_timing": {
+    "record_window": [
+      "2024-01-01",
+      "2024-06-30"
+    ],
+    "loans_applied_before_window_share": 0.711712,
+    "application_date_range": [
+      "2022-10-17",
+      "2024-04-13"
+    ],
+    "heldout_defaults_before_window_end_share": 0.687719,
+    "auc_by_default_timing": {
+      "before the window": {
+        "defaults": 88,
+        "monotone": 0.6261,
+        "without Income-stage features and profile flags": 0.6026
+      },
+      "during the window": {
+        "defaults": 108,
+        "monotone": 0.6304,
+        "without Income-stage features and profile flags": 0.5696
+      },
+      "after the window": {
+        "defaults": 89,
+        "monotone": 0.6326,
+        "without Income-stage features and profile flags": 0.557
+      }
+    }
+  },
+  "e2_paired_differences": {
+    "monotone minus without wallet": {
+      "diff": -0.0068,
+      "ci95": [
+        -0.0114,
+        -0.0021
+      ]
+    },
+    "monotone minus without remittance": {
+      "diff": -0.0067,
+      "ci95": [
+        -0.0272,
+        0.0134
+      ]
+    },
+    "monotone minus without cooperative": {
+      "diff": 0.002,
+      "ci95": [
+        -0.0053,
+        0.0084
+      ]
+    },
+    "monotone minus without utility": {
+      "diff": -0.0001,
+      "ci95": [
+        -0.0107,
+        0.0091
+      ]
+    },
+    "monotone minus without bureau": {
+      "diff": -0.0034,
+      "ci95": [
+        -0.01,
+        0.0031
+      ]
+    },
+    "monotone minus without Income-stage features": {
+      "diff": 0.009,
+      "ci95": [
+        -0.0058,
+        0.0249
+      ]
+    },
+    "monotone minus without profile flags": {
+      "diff": -0.002,
+      "ci95": [
+        -0.0066,
+        0.0029
+      ]
+    },
+    "monotone minus without Income-stage features and profile flags": {
+      "diff": 0.0539,
+      "ci95": [
+        0.0212,
+        0.0926
+      ]
+    },
+    "with protected minus monotone": {
+      "diff": 0.0026,
+      "ci95": [
+        -0.0034,
+        0.0083
+      ]
+    },
+    "monotone minus logistic": {
+      "diff": -0.0039,
+      "ci95": [
+        -0.022,
+        0.0158
+      ]
+    },
+    "unconstrained minus monotone": {
+      "diff": 0.0084,
+      "ci95": [
+        0.0019,
+        0.015
+      ]
+    },
+    "released minus monotone": {
+      "diff": 0.009,
+      "ci95": [
+        -0.0001,
+        0.0184
+      ]
+    },
+    "released minus logistic": {
+      "diff": 0.0051,
+      "ci95": [
+        -0.0124,
+        0.0239
+      ]
+    },
+    "generator score minus released": {
+      "diff": 0.0305,
+      "ci95": [
+        0.0019,
+        0.058
+      ]
+    }
+  },
+  "e2_secondary_label_auc": 0.65,
+  "e3_population": {
+    "applicants": 100000,
+    "imr_not_computable": 20019,
+    "imr_not_computable_share": 0.20019,
+    "not_computable_by_type": {
+      "other informal": 10207,
+      "agriculture": 5665,
+      "remittance": 2877,
+      "salaried": 1270
+    },
+    "type_mix_computable": {
+      "remittance": 0.649879,
+      "other informal": 0.208437,
+      "agriculture": 0.117403,
+      "salaried": 0.024281
+    }
+  },
+  "e3_by_scenario_and_type": {
+    "S1 all income visible": [
+      {
+        "income_type": "salaried",
+        "n": 1942,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.559524,
+        "detect_understatement": 0.391304,
+        "flag_rate": 0.033471,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "remittance",
+        "n": 51978,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.0,
+        "detect_understatement": 0.49285,
+        "flag_rate": 0.009947,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "agriculture",
+        "n": 9390,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.569593,
+        "detect_understatement": 0.488372,
+        "flag_rate": 0.03951,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "other informal",
+        "n": 16671,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.562144,
+        "detect_understatement": 0.488304,
+        "flag_rate": 0.03959,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "all",
+        "n": 79981,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.200149,
+        "detect_understatement": 0.488499,
+        "flag_rate": 0.020167,
+        "precision_of_flags": 1.0
+      }
+    ],
+    "S2 moderate gap": [
+      {
+        "income_type": "salaried",
+        "n": 1942,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.585859,
+        "detect_understatement": 0.408163,
+        "flag_rate": 0.040165,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "remittance",
+        "n": 51978,
+        "false_flag_rate_honest": 0.0,
+        "detect_overstatement": 0.216102,
+        "detect_understatement": 0.411067,
+        "flag_rate": 0.018796,
+        "precision_of_flags": 1.0
+      },
+      {
+        "income_type": "agriculture",
+        "n": 9390,
+        "false_flag_rate_honest": 0.051615,
+        "detect_overstatement": 0.886792,
+        "detect_understatement": 0.191589,
+        "flag_rate": 0.097231,
+        "precision_of_flags": 0.508215
+      },
+      {
+        "income_type": "other informal",
+        "n": 16671,
+        "false_flag_rate_honest": 0.152692,
+        "detect_overstatement": 0.956229,
+        "detect_understatement": 0.123457,
+        "flag_rate": 0.195069,
+        "precision_of_flags": 0.274293
+      },
+      {
+        "income_type": "all",
+        "n": 79981,
+        "false_flag_rate_honest": 0.037797,
+        "detect_overstatement": 0.466158,
+        "detect_understatement": 0.323327,
+        "flag_rate": 0.065266,
+        "precision_of_flags": 0.461877
+      }
+    ],
+    "S3 large gap": [
+      {
+        "income_type": "salaried",
+        "n": 1942,
+        "false_flag_rate_honest": 0.001643,
+        "detect_overstatement": 0.784091,
+        "detect_understatement": 0.25,
+        "flag_rate": 0.04068,
+        "precision_of_flags": 0.962025
+      },
+      {
+        "income_type": "remittance",
+        "n": 51978,
+        "false_flag_rate_honest": 0.000352,
+        "detect_overstatement": 0.421273,
+        "detect_understatement": 0.284499,
+        "flag_rate": 0.027377,
+        "precision_of_flags": 0.988053
+      },
+      {
+        "income_type": "agriculture",
+        "n": 9390,
+        "false_flag_rate_honest": 0.357839,
+        "detect_overstatement": 0.97732,
+        "detect_understatement": 0.05914,
+        "flag_rate": 0.383919,
+        "precision_of_flags": 0.134535
+      },
+      {
+        "income_type": "other informal",
+        "n": 16671,
+        "false_flag_rate_honest": 0.617034,
+        "detect_overstatement": 0.991879,
+        "detect_understatement": 0.080745,
+        "flag_rate": 0.626057,
+        "precision_of_flags": 0.084411
+      },
+      {
+        "income_type": "all",
+        "n": 79981,
+        "false_flag_rate_honest": 0.170808,
+        "detect_overstatement": 0.616806,
+        "detect_understatement": 0.216437,
+        "flag_rate": 0.194346,
+        "precision_of_flags": 0.183222
+      }
+    ]
+  },
+  "e3_threshold_sensitivity": [
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 2.0,
+      "false_flag_rate_honest": 2.7e-05,
+      "detect_overstatement": 0.300968,
+      "false_flag_other_informal": 0.000129
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 3.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.200149,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 4.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.092376,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 5.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.0,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S1 all income visible",
+      "upper_threshold": 6.0,
+      "false_flag_rate_honest": 0.0,
+      "detect_overstatement": 0.0,
+      "false_flag_other_informal": 0.0
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 2.0,
+      "false_flag_rate_honest": 0.139951,
+      "detect_overstatement": 0.496677,
+      "false_flag_other_informal": 0.506988
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 3.0,
+      "false_flag_rate_honest": 0.037797,
+      "detect_overstatement": 0.466158,
+      "false_flag_other_informal": 0.152692
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 4.0,
+      "false_flag_rate_honest": 0.011491,
+      "detect_overstatement": 0.420871,
+      "false_flag_other_informal": 0.049107
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 5.0,
+      "false_flag_rate_honest": 0.003942,
+      "detect_overstatement": 0.361802,
+      "false_flag_other_informal": 0.017469
+    },
+    {
+      "scenario": "S2 moderate gap",
+      "upper_threshold": 6.0,
+      "false_flag_rate_honest": 0.001507,
+      "detect_overstatement": 0.204529,
+      "false_flag_other_informal": 0.006729
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 2.0,
+      "false_flag_rate_honest": 0.274496,
+      "detect_overstatement": 0.624692,
+      "false_flag_other_informal": 0.900303
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 3.0,
+      "false_flag_rate_honest": 0.170808,
+      "detect_overstatement": 0.616806,
+      "false_flag_other_informal": 0.617034
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 4.0,
+      "false_flag_rate_honest": 0.101427,
+      "detect_overstatement": 0.597831,
+      "false_flag_other_informal": 0.391877
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 5.0,
+      "false_flag_rate_honest": 0.062277,
+      "detect_overstatement": 0.57171,
+      "false_flag_other_informal": 0.250791
+    },
+    {
+      "scenario": "S3 large gap",
+      "upper_threshold": 6.0,
+      "false_flag_rate_honest": 0.039621,
+      "detect_overstatement": 0.424593,
+      "false_flag_other_informal": 0.163492
+    }
+  ],
+  "e4_decision_mix": {
+    "refer": 0.769736,
+    "approve": 0.155932,
+    "conditional": 0.06962,
+    "decline": 0.004712
+  },
+  "e4_rule_trigger_rates": {
+    "BLACKLIST": 0.004712,
+    "AML_SCREEN": 0.007632,
+    "KYC_TIER_LIMIT": 0.167181,
+    "COLLATERAL_REQUIRED": 0.004314,
+    "AGRI_LOAN_TO_INCOME": 0.238162,
+    "EXISTING_LOANS": 0.027543,
+    "DSTI_CAP": 0.590941,
+    "INCOME_MISMATCH": 0.0
+  },
+  "e4_thin_file": {
+    "share": 0.163,
+    "new_decisions": {
+      "refer": 4889,
+      "decline": 23
+    }
+  },
+  "e4_default_rate_by_decision": {
+    "approve": {
+      "mean": 0.01773,
+      "count": 3779
+    },
+    "conditional": {
+      "mean": 0.023723,
+      "count": 1096
+    },
+    "refer": {
+      "mean": 0.039409,
+      "count": 4872
+    }
+  },
+  "e4_dsti": {
+    "applicable_share": 0.849444,
+    "trigger_rate_if_true_income_is_k_times_observed": {
+      "1": 0.695875,
+      "1.5": 0.61372,
+      "2": 0.556528,
+      "3": 0.475154,
+      "5": 0.365966
+    }
+  },
+  "e4_observed_income": {
+    "median_observed_monthly_income": 3691.0,
+    "median_observed_monthly_income_if_positive": 5577.0,
+    "share_without_observed_income": 0.150556,
+    "median_requested_amount": 150000.0
+  },
+  "e4_groups": {
+    "gender": {
+      "female": {
+        "n": 12311,
+        "approve_or_conditional": 0.2328,
+        "thin_file": 0.161969,
+        "auc": 0.630392
+      },
+      "male": {
+        "n": 17824,
+        "approve_or_conditional": 0.220545,
+        "thin_file": 0.163712,
+        "auc": 0.643894
+      }
+    },
+    "rural_urban": {
+      "rural": {
+        "n": 7497,
+        "approve_or_conditional": 0.230225,
+        "thin_file": 0.1674,
+        "auc": 0.6676
+      },
+      "semi_urban": {
+        "n": 11157,
+        "approve_or_conditional": 0.228198,
+        "thin_file": 0.163843,
+        "auc": 0.638795
+      },
+      "urban": {
+        "n": 11481,
+        "approve_or_conditional": 0.219929,
+        "thin_file": 0.159307,
+        "auc": 0.619731
+      }
+    },
+    "province": {
+      "Bagmati": {
+        "n": 8202,
+        "approve_or_conditional": 0.222994,
+        "thin_file": 0.168861,
+        "auc": 0.672801
+      },
+      "Gandaki": {
+        "n": 3273,
+        "approve_or_conditional": 0.223342,
+        "thin_file": 0.166819,
+        "auc": 0.657724
+      },
+      "Karnali": {
+        "n": 1369,
+        "approve_or_conditional": 0.224251,
+        "thin_file": 0.17458,
+        "auc": 0.674766
+      },
+      "Koshi": {
+        "n": 5343,
+        "approve_or_conditional": 0.222721,
+        "thin_file": 0.153659,
+        "auc": 0.694862
+      },
+      "Lumbini": {
+        "n": 5291,
+        "approve_or_conditional": 0.228879,
+        "thin_file": 0.161973,
+        "auc": 0.60118
+      },
+      "Madhesh": {
+        "n": 3841,
+        "approve_or_conditional": 0.232492,
+        "thin_file": 0.15699,
+        "auc": 0.608021
+      },
+      "Sudurpashchim": {
+        "n": 2816,
+        "approve_or_conditional": 0.225852,
+        "thin_file": 0.163707,
+        "auc": 0.578062
+      }
+    }
+  },
+  "e4_top_driver": {
+    "share_by_feature": {
+      "remittance_monthly_avg": 0.899983,
+      "existing_loan_count": 0.07327,
+      "collateral_coverage": 0.01699,
+      "utility_avg_bill_nrs": 0.007632,
+      "cooperative_monthly_sales": 0.00083,
+      "remittance_regularity_score": 0.000564
+    },
+    "no_transfer_company_remittance_is_top_risk_driver": 0.593363
+  },
+  "e4_dsti_and_referrals": {
+    "referred_with_dsti_triggered": 0.764097,
+    "referred_only_because_of_dsti": 0.283411,
+    "decision_mix_without_dsti": {
+      "refer": 0.551585,
+      "conditional": 0.22814,
+      "approve": 0.215563,
+      "decline": 0.004712
+    }
+  },
+  "e5": {
+    "n": 300,
+    "agreement_with_batch_decisions": 1.0,
+    "max_abs_pd_difference_vs_batch": 5e-06,
+    "audit_chain": {
+      "ok": true,
+      "entries": 1203,
+      "first_bad_seq": null,
+      "head": "7ec318baccbba43d255a6b1a1d9140f4e6939a502d6b28d43c39abed74ed1784"
+    },
+    "latency_ms": {
+      "total_median": 181.0,
+      "total_p95": 221.3,
+      "income_node_median": 145.2,
+      "compliance_node_median": 8.7,
+      "scoring_node_median": 13.3,
+      "decision_node_median": 6.4
+    }
+  }
+}

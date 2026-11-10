@@ -1,0 +1,179 @@
+{
+  "features": [
+    "requested_amount_nrs",
+    "requested_tenure_months",
+    "collateral_value_nrs",
+    "collateral_coverage",
+    "existing_loan_count",
+    "household_size",
+    "land_area_ropani",
+    "monthly_income_est",
+    "income_confidence",
+    "income_signal_count",
+    "remittance_monthly_avg",
+    "remittance_regularity_score",
+    "esewa_net_monthly",
+    "esewa_tx_count_6months",
+    "cooperative_monthly_sales",
+    "coop_tenure_years",
+    "utility_avg_bill_nrs",
+    "overall_on_time_rate",
+    "util_arrears_total_nrs",
+    "loan_to_annual_income",
+    "instalment_to_income",
+    "credit_bureau_score",
+    "has_bureau_score",
+    "has_esewa_account",
+    "has_khalti_account",
+    "remittance_receiving",
+    "cooperative_member",
+    "loan_purpose",
+    "collateral_type",
+    "occupation_en",
+    "education_level",
+    "kyc_tier"
+  ],
+  "categories": {
+    "loan_purpose": {
+      "agri_land_development": 0,
+      "agricultural_input": 1,
+      "education": 2,
+      "emergency_medical": 3,
+      "home_repair": 4,
+      "irrigation_equipment": 5,
+      "livestock_purchase": 6,
+      "microenterprise_startup": 7,
+      "small_trade": 8,
+      "vehicle_purchase": 9
+    },
+    "collateral_type": {
+      "land": 0,
+      "none": 1
+    },
+    "occupation_en": {
+      "artisan": 0,
+      "business owner": 1,
+      "daily wage worker": 2,
+      "driver": 3,
+      "farmer": 4,
+      "government employee": 5,
+      "nurse/health worker": 6,
+      "remittance dependent": 7,
+      "service worker": 8,
+      "small trader": 9,
+      "teacher": 10
+    },
+    "education_level": {
+      "bachelors": 0,
+      "illiterate": 1,
+      "intermediate": 2,
+      "masters": 3,
+      "phd": 4,
+      "primary": 5,
+      "slc": 6
+    },
+    "kyc_tier": {
+      "basic": 0,
+      "full": 1,
+      "mid": 2
+    }
+  },
+  "monotone_constraints": {
+    "instalment_to_income": 1,
+    "loan_to_annual_income": 1,
+    "util_arrears_total_nrs": 1,
+    "collateral_coverage": -1,
+    "overall_on_time_rate": -1,
+    "income_confidence": -1,
+    "credit_bureau_score": -1
+  },
+  "label_definition": "P(outcome == 'defaulted') on the hackathon's Track A synthetic outcomes; trained on approved loans only",
+  "excluded": {
+    "protected_or_proxy": [
+      "gender",
+      "marital_status",
+      "age",
+      "names",
+      "citizenship",
+      "phone",
+      "province",
+      "district",
+      "municipality",
+      "ward",
+      "rural_urban"
+    ],
+    "generator_outputs": [
+      "credit_score",
+      "composite_creditworthiness_score",
+      "income_agent_monthly_est",
+      "income_confidence (organiser)",
+      "final_decision",
+      "approved_amount_nrs",
+      "interest_rate_pct",
+      "processing_time_seconds",
+      "compliance_status",
+      "doc_completeness_score"
+    ]
+  },
+  "scaling": {
+    "pdo": 20.0,
+    "base_score": 600.0,
+    "base_odds": 50.0,
+    "min_score": 300,
+    "max_score": 850
+  },
+  "grades": [
+    {
+      "grade": "A",
+      "pd_below": 0.015
+    },
+    {
+      "grade": "B",
+      "pd_below": 0.025
+    },
+    {
+      "grade": "C",
+      "pd_below": 0.04
+    },
+    {
+      "grade": "D",
+      "pd_below": 0.06
+    },
+    {
+      "grade": "E",
+      "pd_below": 1.01
+    }
+  ],
+  "training": {
+    "rows": 22443,
+    "defaults": 632,
+    "boost_rounds": 61,
+    "params": {
+      "objective": "binary:logistic",
+      "eval_metric": "logloss",
+      "eta": 0.03,
+      "max_depth": 4,
+      "min_child_weight": 10,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "lambda": 2.0,
+      "tree_method": "hist",
+      "seed": 20261110,
+      "nthread": 2
+    },
+    "seed": 20261110
+  },
+  "heldout_metrics": {
+    "auc": 0.6387,
+    "auc_95ci": [
+      0.608,
+      0.669
+    ],
+    "ks": 0.205,
+    "brier": 0.02818,
+    "log_loss": 0.12875,
+    "ece_10bins": 0.00293,
+    "mean_pd": 0.02788,
+    "observed_rate": 0.02924
+  }
+}
