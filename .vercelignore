@@ -16,6 +16,12 @@ venv/
 __pycache__/
 *.pyc
 .pytest_cache/
+.svelte-kit/
+frontend/.svelte-kit/
+build/
+frontend/build/
+.vercel/
+frontend/.vercel/
 .DS_Store
 audit_log.jsonl
 offline_run.jsonl
