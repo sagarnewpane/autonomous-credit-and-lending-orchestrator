@@ -1,0 +1,881 @@
+{
+ "note": "Invented applicants, run through the pipeline by scripts/make_showcase_examples.py. No Track A records are used.",
+ "labels": {
+  "requested_amount_nrs": "Requested amount",
+  "requested_tenure_months": "Loan tenure",
+  "collateral_value_nrs": "Collateral value",
+  "collateral_coverage": "Collateral cover",
+  "existing_loan_count": "Existing loans",
+  "household_size": "Household size",
+  "land_area_ropani": "Land holding",
+  "monthly_income_est": "Observed monthly income",
+  "income_confidence": "Strength of income evidence",
+  "income_signal_count": "Number of income sources",
+  "remittance_monthly_avg": "Remittances via transfer companies",
+  "remittance_regularity_score": "Regularity of transfer-company remittances",
+  "esewa_net_monthly": "Wallet net inflow",
+  "esewa_tx_count_6months": "Wallet activity",
+  "cooperative_monthly_sales": "Cooperative sales",
+  "coop_tenure_years": "Cooperative membership length",
+  "utility_avg_bill_nrs": "Utility bill size",
+  "elec_on_time_rate": "On-time electricity payments",
+  "overall_on_time_rate": "On-time utility payments",
+  "util_arrears_total_nrs": "Utility arrears",
+  "loan_to_annual_income": "Loan relative to income",
+  "instalment_to_income": "Instalment relative to income",
+  "credit_bureau_score": "Credit bureau score",
+  "has_bureau_score": "Has a bureau record",
+  "has_esewa_account": "Has an eSewa account",
+  "has_khalti_account": "Has a Khalti account",
+  "remittance_receiving": "Reports receiving remittances",
+  "cooperative_member": "Cooperative member",
+  "loan_purpose": "Loan purpose",
+  "collateral_type": "Collateral type",
+  "occupation_en": "Occupation",
+  "education_level": "Education",
+  "kyc_tier": "KYC tier"
+ },
+ "examples": [
+  {
+   "key": "remittance",
+   "label": "Remittance household",
+   "story": "Her husband works in Doha and sends money home every month through a transfer company. She wants to repair the roof before the monsoon.",
+   "application": {
+    "declared_monthly_income": 40000,
+    "loan_purpose": "home_repair",
+    "requested_amount_nrs": 150000,
+    "requested_tenure_months": 24,
+    "collateral_type": "land",
+    "collateral_value_nrs": 600000,
+    "existing_loan_count": 0,
+    "has_bureau_score": true,
+    "kyc_tier": "mid",
+    "occupation": "small trader"
+   },
+   "records": {
+    "wallet": 36,
+    "remittance": 6,
+    "utility": 12,
+    "coop_sales": 0,
+    "months": [
+     "2024-01",
+     "2024-06"
+    ]
+   },
+   "income": {
+    "observed_monthly": 36905,
+    "confidence": 0.93,
+    "imr": 1.084,
+    "imr_status": "computed",
+    "remittance_share": 1.0,
+    "flags": [],
+    "sources": [
+     {
+      "source": "remittance_agent",
+      "monthly": 36905.0,
+      "months": 6,
+      "confidence": 0.8
+     }
+    ],
+    "on_time_rate": 1.0
+   },
+   "compliance": {
+    "status": "pass",
+    "traces": [
+     {
+      "rule_id": "BLACKLIST",
+      "description": "Applicant is on the credit blacklist.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "AML_SCREEN",
+      "description": "Screening returned a possible AML or sanctions match.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "KYC_TIER_LIMIT",
+      "description": "Requested amount exceeds the ceiling for the applicant's KYC tier.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "tier": "mid",
+       "requested": 150000.0
+      },
+      "threshold": 500000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "COLLATERAL_REQUIRED",
+      "description": "Loans above the threshold need collateral.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "requested": 150000.0,
+       "collateral": 600000.0
+      },
+      "threshold": 500000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "AGRI_LOAN_TO_INCOME",
+      "description": "Agricultural loan exceeds 36 times observed monthly income.",
+      "applicable": false,
+      "triggered": false,
+      "action": "pass",
+      "observed": 4.06,
+      "threshold": 36,
+      "note": "purpose 'home_repair' not covered",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "EXISTING_LOANS",
+      "description": "Applicant already has three or more loans.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 0,
+      "threshold": 3,
+      "note": "",
+      "provenance": "design"
+     },
+     {
+      "rule_id": "DSTI_CAP",
+      "description": "Monthly debt service, including the new instalment, exceeds 50% of observed monthly income.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 0.195,
+      "threshold": 0.5,
+      "note": "",
+      "provenance": "regulator_reported"
+     },
+     {
+      "rule_id": "INCOME_MISMATCH",
+      "description": "Declared monthly income differs from observed income by more than the allowed band (IMR = declared / observed).",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 1.084,
+      "threshold": {
+       "low": 0.3,
+       "high": 5.0
+      },
+      "note": "remittance household: relaxed upper bound",
+      "provenance": "design"
+     }
+    ]
+   },
+   "score": {
+    "pd": 0.01823,
+    "credit_score": 602,
+    "risk_grade": "B",
+    "drivers": [
+     {
+      "feature": "remittance_monthly_avg",
+      "label": "Remittances via transfer companies",
+      "value": 36905.0,
+      "shap": -0.147,
+      "direction": "lowers risk"
+     },
+     {
+      "feature": "remittance_regularity_score",
+      "label": "Regularity of transfer-company remittances",
+      "value": 0.951,
+      "shap": 0.0745,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "collateral_coverage",
+      "label": "Collateral cover",
+      "value": 4.0,
+      "shap": -0.0664,
+      "direction": "lowers risk"
+     },
+     {
+      "feature": "loan_to_annual_income",
+      "label": "Loan relative to income",
+      "value": 0.3387074922097277,
+      "shap": -0.0604,
+      "direction": "lowers risk"
+     },
+     {
+      "feature": "util_arrears_total_nrs",
+      "label": "Utility arrears",
+      "value": 0.0,
+      "shap": -0.0538,
+      "direction": "lowers risk"
+     }
+    ]
+   },
+   "decision": {
+    "decision": "approve",
+    "approved_amount_nrs": 150000,
+    "reasons": [
+     "Estimated default probability 1.8% is low."
+    ],
+    "counter_offer": null,
+    "illustrative_rate_pct": 12.5,
+    "policy_version": "f985d9bccc91",
+    "model_version": "827ac57377b5"
+   },
+   "audit_lines": [
+    "{\"agent\":\"income_node\",\"application_id\":\"DEMO-REMITTANCE-01\",\"hash\":\"46be212637bfcb7c1cc482fc99937b0ea7610d92b8aeec39fa4a431a9becc0b7\",\"payload\":{\"declared_monthly_income\":40000.0,\"elapsed_ms\":43.23,\"imr\":1.084,\"imr_status\":\"computed\",\"income_agent_monthly_est\":36905,\"income_confidence\":0.93,\"income_flags\":[],\"income_signal_count\":1,\"remittance_share\":1.0},\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"seq\":1,\"ts\":\"2026-11-10T06:11:31.474+00:00\"}",
+    "{\"agent\":\"compliance_node\",\"application_id\":\"DEMO-REMITTANCE-01\",\"hash\":\"0dbe7e56f3fe0d8368c7cc0de839d8efee4fc804e9bd39b498341e5bd5ad16b9\",\"payload\":{\"compliance_flags\":[],\"compliance_notes\":[],\"compliance_status\":\"pass\",\"elapsed_ms\":5.4,\"policy_version\":\"f985d9bccc91\",\"rule_traces\":[{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"BLACKLIST\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"AML_SCREEN\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"requested\":150000.0,\"tier\":\"mid\"},\"provenance\":\"hackathon_rule\",\"rule_id\":\"KYC_TIER_LIMIT\",\"threshold\":500000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"collateral\":600000.0,\"requested\":150000.0},\"provenance\":\"hackathon_rule\",\"rule_id\":\"COLLATERAL_REQUIRED\",\"threshold\":500000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":false,\"observed\":4.06,\"provenance\":\"hackathon_rule\",\"rule_id\":\"AGRI_LOAN_TO_INCOME\",\"threshold\":36,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":0,\"provenance\":\"design\",\"rule_id\":\"EXISTING_LOANS\",\"threshold\":3,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":0.195,\"provenance\":\"regulator_reported\",\"rule_id\":\"DSTI_CAP\",\"threshold\":0.5,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":1.084,\"provenance\":\"design\",\"rule_id\":\"INCOME_MISMATCH\",\"threshold\":{\"high\":5.0,\"low\":0.3},\"triggered\":false}]},\"prev_hash\":\"46be212637bfcb7c1cc482fc99937b0ea7610d92b8aeec39fa4a431a9becc0b7\",\"seq\":2,\"ts\":\"2026-11-10T06:11:31.480+00:00\"}",
+    "{\"agent\":\"scoring_node\",\"application_id\":\"DEMO-REMITTANCE-01\",\"hash\":\"868ec5348b58493096336c1790902980566c7f19e2c680fa9f2d59f7740e1012\",\"payload\":{\"elapsed_ms\":1092.23,\"scorecard\":{\"credit_score\":602,\"drivers\":[{\"direction\":\"lowers risk\",\"feature\":\"remittance_monthly_avg\",\"label\":\"Remittances via transfer companies\",\"shap_log_odds\":-0.147,\"value\":36905.0},{\"direction\":\"raises risk\",\"feature\":\"remittance_regularity_score\",\"label\":\"Regularity of transfer-company remittances\",\"shap_log_odds\":0.0745,\"value\":0.951},{\"direction\":\"lowers risk\",\"feature\":\"collateral_coverage\",\"label\":\"Collateral cover\",\"shap_log_odds\":-0.0664,\"value\":4.0},{\"direction\":\"lowers risk\",\"feature\":\"loan_to_annual_income\",\"label\":\"Loan relative to income\",\"shap_log_odds\":-0.0604,\"value\":0.3387074922097277},{\"direction\":\"lowers risk\",\"feature\":\"util_arrears_total_nrs\",\"label\":\"Utility arrears\",\"shap_log_odds\":-0.0538,\"value\":0.0}],\"error\":null,\"model_version\":\"827ac57377b5\",\"pd\":0.01823,\"risk_grade\":\"B\",\"status\":\"ok\"}},\"prev_hash\":\"0dbe7e56f3fe0d8368c7cc0de839d8efee4fc804e9bd39b498341e5bd5ad16b9\",\"seq\":3,\"ts\":\"2026-11-10T06:11:32.574+00:00\"}",
+    "{\"agent\":\"decision_node\",\"application_id\":\"DEMO-REMITTANCE-01\",\"hash\":\"08682cb0b698a92af5fa22d63ccf781bd78b41120ad19bd4178588e6297292a1\",\"payload\":{\"approved_amount_nrs\":150000,\"counter_offer\":null,\"decision_reasons\":[\"Estimated default probability 1.8% is low.\"],\"elapsed_ms\":8.09,\"final_decision\":\"approve\",\"income_flags\":[],\"model_version\":\"827ac57377b5\",\"not_screened\":[],\"policy_version\":\"f985d9bccc91\"},\"prev_hash\":\"868ec5348b58493096336c1790902980566c7f19e2c680fa9f2d59f7740e1012\",\"seq\":4,\"ts\":\"2026-11-10T06:11:32.583+00:00\"}"
+   ]
+  },
+  {
+   "key": "trader",
+   "label": "Market trader, wallet only",
+   "story": "He sells vegetables at a weekly market and deposits the cash into a wallet. He opened the wallet two months ago and has no bank or bureau record.",
+   "application": {
+    "declared_monthly_income": 25000,
+    "loan_purpose": "small_trade",
+    "requested_amount_nrs": 60000,
+    "requested_tenure_months": 12,
+    "collateral_type": "none",
+    "collateral_value_nrs": 0,
+    "existing_loan_count": 0,
+    "has_bureau_score": false,
+    "kyc_tier": "basic",
+    "occupation": "small trader"
+   },
+   "records": {
+    "wallet": 24,
+    "remittance": 0,
+    "utility": 2,
+    "coop_sales": 0,
+    "months": [
+     "2024-05",
+     "2024-06"
+    ]
+   },
+   "income": {
+    "observed_monthly": 16905,
+    "confidence": 0.35,
+    "imr": 1.479,
+    "imr_status": "computed",
+    "remittance_share": 0.0,
+    "flags": [],
+    "sources": [
+     {
+      "source": "wallet_topup",
+      "monthly": 16905.0,
+      "months": 2,
+      "confidence": 0.5
+     }
+    ],
+    "on_time_rate": 0.0
+   },
+   "compliance": {
+    "status": "pass",
+    "traces": [
+     {
+      "rule_id": "BLACKLIST",
+      "description": "Applicant is on the credit blacklist.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "AML_SCREEN",
+      "description": "Screening returned a possible AML or sanctions match.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "KYC_TIER_LIMIT",
+      "description": "Requested amount exceeds the ceiling for the applicant's KYC tier.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "tier": "basic",
+       "requested": 60000.0
+      },
+      "threshold": 100000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "COLLATERAL_REQUIRED",
+      "description": "Loans above the threshold need collateral.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "requested": 60000.0,
+       "collateral": 0.0
+      },
+      "threshold": 500000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "AGRI_LOAN_TO_INCOME",
+      "description": "Agricultural loan exceeds 36 times observed monthly income.",
+      "applicable": false,
+      "triggered": false,
+      "action": "pass",
+      "observed": 3.55,
+      "threshold": 36,
+      "note": "purpose 'small_trade' not covered",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "EXISTING_LOANS",
+      "description": "Applicant already has three or more loans.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 0,
+      "threshold": 3,
+      "note": "",
+      "provenance": "design"
+     },
+     {
+      "rule_id": "DSTI_CAP",
+      "description": "Monthly debt service, including the new instalment, exceeds 50% of observed monthly income.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 0.319,
+      "threshold": 0.5,
+      "note": "",
+      "provenance": "regulator_reported"
+     },
+     {
+      "rule_id": "INCOME_MISMATCH",
+      "description": "Declared monthly income differs from observed income by more than the allowed band (IMR = declared / observed).",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 1.479,
+      "threshold": {
+       "low": 0.3,
+       "high": 3.0
+      },
+      "note": "",
+      "provenance": "design"
+     }
+    ]
+   },
+   "score": {
+    "pd": 0.0361,
+    "credit_score": 582,
+    "risk_grade": "C",
+    "drivers": [
+     {
+      "feature": "remittance_monthly_avg",
+      "label": "Remittances via transfer companies",
+      "value": 0.0,
+      "shap": 0.2226,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "remittance_regularity_score",
+      "label": "Regularity of transfer-company remittances",
+      "value": 0.0,
+      "shap": 0.1178,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "loan_to_annual_income",
+      "label": "Loan relative to income",
+      "value": 0.29577048210588586,
+      "shap": -0.1144,
+      "direction": "lowers risk"
+     },
+     {
+      "feature": "collateral_coverage",
+      "label": "Collateral cover",
+      "value": 0.0,
+      "shap": 0.1143,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "utility_avg_bill_nrs",
+      "label": "Utility bill size",
+      "value": 499.0,
+      "shap": -0.0843,
+      "direction": "lowers risk"
+     }
+    ]
+   },
+   "decision": {
+    "decision": "refer",
+    "approved_amount_nrs": null,
+    "reasons": [
+     "Estimated default probability 3.6% is moderate.",
+     "Thin file: income evidence confidence 0.35 is below 0.40; manual review rather than decline."
+    ],
+    "counter_offer": null,
+    "illustrative_rate_pct": null,
+    "policy_version": "f985d9bccc91",
+    "model_version": "827ac57377b5"
+   },
+   "audit_lines": [
+    "{\"agent\":\"income_node\",\"application_id\":\"DEMO-TRADER-01\",\"hash\":\"c63cbdd37c0701174ffa7e7e3ebd88418da4583182ad2bfb0f1278b0d44eaf47\",\"payload\":{\"declared_monthly_income\":25000.0,\"elapsed_ms\":16.6,\"imr\":1.479,\"imr_status\":\"computed\",\"income_agent_monthly_est\":16905,\"income_confidence\":0.35,\"income_flags\":[],\"income_signal_count\":1,\"remittance_share\":0.0},\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"seq\":1,\"ts\":\"2026-11-10T06:11:32.601+00:00\"}",
+    "{\"agent\":\"compliance_node\",\"application_id\":\"DEMO-TRADER-01\",\"hash\":\"153559949f88ce59942194bc1f47619a690ad216e2bdc64e0a501df7a2298cac\",\"payload\":{\"compliance_flags\":[],\"compliance_notes\":[],\"compliance_status\":\"pass\",\"elapsed_ms\":7.27,\"policy_version\":\"f985d9bccc91\",\"rule_traces\":[{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"BLACKLIST\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"AML_SCREEN\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"requested\":60000.0,\"tier\":\"basic\"},\"provenance\":\"hackathon_rule\",\"rule_id\":\"KYC_TIER_LIMIT\",\"threshold\":100000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"collateral\":0.0,\"requested\":60000.0},\"provenance\":\"hackathon_rule\",\"rule_id\":\"COLLATERAL_REQUIRED\",\"threshold\":500000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":false,\"observed\":3.55,\"provenance\":\"hackathon_rule\",\"rule_id\":\"AGRI_LOAN_TO_INCOME\",\"threshold\":36,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":0,\"provenance\":\"design\",\"rule_id\":\"EXISTING_LOANS\",\"threshold\":3,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":0.319,\"provenance\":\"regulator_reported\",\"rule_id\":\"DSTI_CAP\",\"threshold\":0.5,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":1.479,\"provenance\":\"design\",\"rule_id\":\"INCOME_MISMATCH\",\"threshold\":{\"high\":3.0,\"low\":0.3},\"triggered\":false}]},\"prev_hash\":\"c63cbdd37c0701174ffa7e7e3ebd88418da4583182ad2bfb0f1278b0d44eaf47\",\"seq\":2,\"ts\":\"2026-11-10T06:11:32.610+00:00\"}",
+    "{\"agent\":\"scoring_node\",\"application_id\":\"DEMO-TRADER-01\",\"hash\":\"fe661539d9323fb30b334e2ec9436b20a34e5216137d02d5691f898fb0263175\",\"payload\":{\"elapsed_ms\":10.78,\"scorecard\":{\"credit_score\":582,\"drivers\":[{\"direction\":\"raises risk\",\"feature\":\"remittance_monthly_avg\",\"label\":\"Remittances via transfer companies\",\"shap_log_odds\":0.2226,\"value\":0.0},{\"direction\":\"raises risk\",\"feature\":\"remittance_regularity_score\",\"label\":\"Regularity of transfer-company remittances\",\"shap_log_odds\":0.1178,\"value\":0.0},{\"direction\":\"lowers risk\",\"feature\":\"loan_to_annual_income\",\"label\":\"Loan relative to income\",\"shap_log_odds\":-0.1144,\"value\":0.29577048210588586},{\"direction\":\"raises risk\",\"feature\":\"collateral_coverage\",\"label\":\"Collateral cover\",\"shap_log_odds\":0.1143,\"value\":0.0},{\"direction\":\"lowers risk\",\"feature\":\"utility_avg_bill_nrs\",\"label\":\"Utility bill size\",\"shap_log_odds\":-0.0843,\"value\":499.0}],\"error\":null,\"model_version\":\"827ac57377b5\",\"pd\":0.0361,\"risk_grade\":\"C\",\"status\":\"ok\"}},\"prev_hash\":\"153559949f88ce59942194bc1f47619a690ad216e2bdc64e0a501df7a2298cac\",\"seq\":3,\"ts\":\"2026-11-10T06:11:32.622+00:00\"}",
+    "{\"agent\":\"decision_node\",\"application_id\":\"DEMO-TRADER-01\",\"hash\":\"26bc603c3d6ae8c671d47e38f04589901bdcc5707ed9ce23c4518d726add7b91\",\"payload\":{\"approved_amount_nrs\":null,\"counter_offer\":null,\"decision_reasons\":[\"Estimated default probability 3.6% is moderate.\",\"Thin file: income evidence confidence 0.35 is below 0.40; manual review rather than decline.\"],\"elapsed_ms\":7.28,\"final_decision\":\"refer\",\"income_flags\":[],\"model_version\":\"827ac57377b5\",\"not_screened\":[],\"policy_version\":\"f985d9bccc91\"},\"prev_hash\":\"fe661539d9323fb30b334e2ec9436b20a34e5216137d02d5691f898fb0263175\",\"seq\":4,\"ts\":\"2026-11-10T06:11:32.630+00:00\"}"
+   ]
+  },
+  {
+   "key": "overstated",
+   "label": "Declares more than the records show",
+   "story": "A driver paid by passengers through his wallet. He declares NPR 85,000 a month and asks for a loan to buy his own vehicle.",
+   "application": {
+    "declared_monthly_income": 85000,
+    "loan_purpose": "vehicle_purchase",
+    "requested_amount_nrs": 450000,
+    "requested_tenure_months": 36,
+    "collateral_type": "none",
+    "collateral_value_nrs": 0,
+    "existing_loan_count": 1,
+    "has_bureau_score": true,
+    "kyc_tier": "full",
+    "occupation": "driver"
+   },
+   "records": {
+    "wallet": 180,
+    "remittance": 0,
+    "utility": 6,
+    "coop_sales": 0,
+    "months": [
+     "2024-01",
+     "2024-06"
+    ]
+   },
+   "income": {
+    "observed_monthly": 20136,
+    "confidence": 0.65,
+    "imr": 4.221,
+    "imr_status": "computed",
+    "remittance_share": 0.0,
+    "flags": [],
+    "sources": [
+     {
+      "source": "other_wallet_inflows",
+      "monthly": 20136.67,
+      "months": 6,
+      "confidence": 0.5
+     }
+    ],
+    "on_time_rate": 0.67
+   },
+   "compliance": {
+    "status": "refer",
+    "traces": [
+     {
+      "rule_id": "BLACKLIST",
+      "description": "Applicant is on the credit blacklist.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "AML_SCREEN",
+      "description": "Screening returned a possible AML or sanctions match.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "KYC_TIER_LIMIT",
+      "description": "Requested amount exceeds the ceiling for the applicant's KYC tier.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "tier": "full",
+       "requested": 450000.0
+      },
+      "threshold": null,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "COLLATERAL_REQUIRED",
+      "description": "Loans above the threshold need collateral.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "requested": 450000.0,
+       "collateral": 0.0
+      },
+      "threshold": 500000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "AGRI_LOAN_TO_INCOME",
+      "description": "Agricultural loan exceeds 36 times observed monthly income.",
+      "applicable": false,
+      "triggered": false,
+      "action": "pass",
+      "observed": 22.35,
+      "threshold": 36,
+      "note": "purpose 'vehicle_purchase' not covered",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "EXISTING_LOANS",
+      "description": "Applicant already has three or more loans.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 1,
+      "threshold": 3,
+      "note": "",
+      "provenance": "design"
+     },
+     {
+      "rule_id": "DSTI_CAP",
+      "description": "Monthly debt service, including the new instalment, exceeds 50% of observed monthly income.",
+      "applicable": true,
+      "triggered": true,
+      "action": "refer",
+      "observed": 0.764,
+      "threshold": 0.5,
+      "note": "",
+      "provenance": "regulator_reported"
+     },
+     {
+      "rule_id": "INCOME_MISMATCH",
+      "description": "Declared monthly income differs from observed income by more than the allowed band (IMR = declared / observed).",
+      "applicable": true,
+      "triggered": true,
+      "action": "refer",
+      "observed": 4.221,
+      "threshold": {
+       "low": 0.3,
+       "high": 3.0
+      },
+      "note": "",
+      "provenance": "design"
+     }
+    ]
+   },
+   "score": {
+    "pd": 0.06259,
+    "credit_score": 565,
+    "risk_grade": "E",
+    "drivers": [
+     {
+      "feature": "existing_loan_count",
+      "label": "Existing loans",
+      "value": 1.0,
+      "shap": 0.2557,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "remittance_monthly_avg",
+      "label": "Remittances via transfer companies",
+      "value": 0.0,
+      "shap": 0.1723,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "collateral_coverage",
+      "label": "Collateral cover",
+      "value": 0.0,
+      "shap": 0.1292,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "remittance_regularity_score",
+      "label": "Regularity of transfer-company remittances",
+      "value": 0.0,
+      "shap": 0.0952,
+      "direction": "raises risk"
+     },
+     {
+      "feature": "loan_to_annual_income",
+      "label": "Loan relative to income",
+      "value": 1.8623361144219308,
+      "shap": 0.0569,
+      "direction": "raises risk"
+     }
+    ]
+   },
+   "decision": {
+    "decision": "refer",
+    "approved_amount_nrs": null,
+    "reasons": [
+     "Estimated default probability 6.3% is high; manual review.",
+     "Manual review required: DSTI_CAP, INCOME_MISMATCH.",
+     "Affordable amount at 36 months: NPR 294,000."
+    ],
+    "counter_offer": {
+     "max_amount_at_requested_tenure": 294000,
+     "requested_tenure_months": 36,
+     "tenure_needed_for_full_amount": null,
+     "affordable_monthly_instalment": 10068.0,
+     "basis": "debt service at most 50% of observed income, 14% assumed rate"
+    },
+    "illustrative_rate_pct": null,
+    "policy_version": "f985d9bccc91",
+    "model_version": "827ac57377b5"
+   },
+   "audit_lines": [
+    "{\"agent\":\"income_node\",\"application_id\":\"DEMO-OVERSTATED-01\",\"hash\":\"5f20b427547e65dc1acf56ae951c9ceeba71fac412585def791034e5c0cb116f\",\"payload\":{\"declared_monthly_income\":85000.0,\"elapsed_ms\":23.9,\"imr\":4.221,\"imr_status\":\"computed\",\"income_agent_monthly_est\":20136,\"income_confidence\":0.65,\"income_flags\":[],\"income_signal_count\":1,\"remittance_share\":0.0},\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"seq\":1,\"ts\":\"2026-11-10T06:11:32.656+00:00\"}",
+    "{\"agent\":\"compliance_node\",\"application_id\":\"DEMO-OVERSTATED-01\",\"hash\":\"1edf3ab6cb130a60115b9f01696cbbb3b6a512d3baad29984f0b7250dd335f2f\",\"payload\":{\"compliance_flags\":[\"DSTI_CAP\",\"INCOME_MISMATCH\"],\"compliance_notes\":[],\"compliance_status\":\"refer\",\"elapsed_ms\":7.32,\"policy_version\":\"f985d9bccc91\",\"rule_traces\":[{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"BLACKLIST\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"AML_SCREEN\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"requested\":450000.0,\"tier\":\"full\"},\"provenance\":\"hackathon_rule\",\"rule_id\":\"KYC_TIER_LIMIT\",\"threshold\":null,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"collateral\":0.0,\"requested\":450000.0},\"provenance\":\"hackathon_rule\",\"rule_id\":\"COLLATERAL_REQUIRED\",\"threshold\":500000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":false,\"observed\":22.35,\"provenance\":\"hackathon_rule\",\"rule_id\":\"AGRI_LOAN_TO_INCOME\",\"threshold\":36,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":1,\"provenance\":\"design\",\"rule_id\":\"EXISTING_LOANS\",\"threshold\":3,\"triggered\":false},{\"action\":\"refer\",\"applicable\":true,\"observed\":0.764,\"provenance\":\"regulator_reported\",\"rule_id\":\"DSTI_CAP\",\"threshold\":0.5,\"triggered\":true},{\"action\":\"refer\",\"applicable\":true,\"observed\":4.221,\"provenance\":\"design\",\"rule_id\":\"INCOME_MISMATCH\",\"threshold\":{\"high\":3.0,\"low\":0.3},\"triggered\":true}]},\"prev_hash\":\"5f20b427547e65dc1acf56ae951c9ceeba71fac412585def791034e5c0cb116f\",\"seq\":2,\"ts\":\"2026-11-10T06:11:32.664+00:00\"}",
+    "{\"agent\":\"scoring_node\",\"application_id\":\"DEMO-OVERSTATED-01\",\"hash\":\"1bad7f38a0fc1b720e255729265bc29d873b56329ab6d4da554e646c3bfc7b7c\",\"payload\":{\"elapsed_ms\":10.17,\"scorecard\":{\"credit_score\":565,\"drivers\":[{\"direction\":\"raises risk\",\"feature\":\"existing_loan_count\",\"label\":\"Existing loans\",\"shap_log_odds\":0.2557,\"value\":1.0},{\"direction\":\"raises risk\",\"feature\":\"remittance_monthly_avg\",\"label\":\"Remittances via transfer companies\",\"shap_log_odds\":0.1723,\"value\":0.0},{\"direction\":\"raises risk\",\"feature\":\"collateral_coverage\",\"label\":\"Collateral cover\",\"shap_log_odds\":0.1292,\"value\":0.0},{\"direction\":\"raises risk\",\"feature\":\"remittance_regularity_score\",\"label\":\"Regularity of transfer-company remittances\",\"shap_log_odds\":0.0952,\"value\":0.0},{\"direction\":\"raises risk\",\"feature\":\"loan_to_annual_income\",\"label\":\"Loan relative to income\",\"shap_log_odds\":0.0569,\"value\":1.8623361144219308}],\"error\":null,\"model_version\":\"827ac57377b5\",\"pd\":0.06259,\"risk_grade\":\"E\",\"status\":\"ok\"}},\"prev_hash\":\"1edf3ab6cb130a60115b9f01696cbbb3b6a512d3baad29984f0b7250dd335f2f\",\"seq\":3,\"ts\":\"2026-11-10T06:11:32.675+00:00\"}",
+    "{\"agent\":\"decision_node\",\"application_id\":\"DEMO-OVERSTATED-01\",\"hash\":\"cdab6b190ac4fd5827b4a5f4b56f924f397040b746ef3cf8da902642fd6b03a6\",\"payload\":{\"approved_amount_nrs\":null,\"counter_offer\":{\"affordable_monthly_instalment\":10068.0,\"basis\":\"debt service at most 50% of observed income, 14% assumed rate\",\"max_amount_at_requested_tenure\":294000,\"requested_tenure_months\":36,\"tenure_needed_for_full_amount\":null},\"decision_reasons\":[\"Estimated default probability 6.3% is high; manual review.\",\"Manual review required: DSTI_CAP, INCOME_MISMATCH.\",\"Affordable amount at 36 months: NPR 294,000.\"],\"elapsed_ms\":5.71,\"final_decision\":\"refer\",\"income_flags\":[],\"model_version\":\"827ac57377b5\",\"not_screened\":[],\"policy_version\":\"f985d9bccc91\"},\"prev_hash\":\"1bad7f38a0fc1b720e255729265bc29d873b56329ab6d4da554e646c3bfc7b7c\",\"seq\":4,\"ts\":\"2026-11-10T06:11:32.682+00:00\"}"
+   ]
+  },
+  {
+   "key": "blacklisted",
+   "label": "Steady farm income, on the blacklist",
+   "story": "A dairy farmer who sells milk through his cooperative all year. The screening result supplied with his application puts him on the credit blacklist.",
+   "application": {
+    "declared_monthly_income": 16000,
+    "loan_purpose": "agricultural_input",
+    "requested_amount_nrs": 80000,
+    "requested_tenure_months": 12,
+    "collateral_type": "land",
+    "collateral_value_nrs": 400000,
+    "existing_loan_count": 0,
+    "has_bureau_score": true,
+    "kyc_tier": "mid",
+    "occupation": "farmer"
+   },
+   "records": {
+    "wallet": 18,
+    "remittance": 0,
+    "utility": 6,
+    "coop_sales": 2,
+    "months": [
+     "2024-01",
+     "2024-06"
+    ]
+   },
+   "income": {
+    "observed_monthly": 15937,
+    "confidence": 0.56,
+    "imr": 1.004,
+    "imr_status": "computed",
+    "remittance_share": 0.0,
+    "flags": [],
+    "sources": [
+     {
+      "source": "COOPERATIVE_SALES",
+      "monthly": 15937.5,
+      "months": 12,
+      "confidence": 0.7
+     }
+    ],
+    "on_time_rate": 1.0
+   },
+   "compliance": {
+    "status": "veto",
+    "traces": [
+     {
+      "rule_id": "BLACKLIST",
+      "description": "Applicant is on the credit blacklist.",
+      "applicable": true,
+      "triggered": true,
+      "action": "veto",
+      "observed": true,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "AML_SCREEN",
+      "description": "Screening returned a possible AML or sanctions match.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": false,
+      "threshold": true,
+      "note": "",
+      "provenance": "hackathon_field"
+     },
+     {
+      "rule_id": "KYC_TIER_LIMIT",
+      "description": "Requested amount exceeds the ceiling for the applicant's KYC tier.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "tier": "mid",
+       "requested": 80000.0
+      },
+      "threshold": 500000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "COLLATERAL_REQUIRED",
+      "description": "Loans above the threshold need collateral.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": {
+       "requested": 80000.0,
+       "collateral": 400000.0
+      },
+      "threshold": 500000,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "AGRI_LOAN_TO_INCOME",
+      "description": "Agricultural loan exceeds 36 times observed monthly income.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 5.02,
+      "threshold": 36,
+      "note": "",
+      "provenance": "hackathon_rule"
+     },
+     {
+      "rule_id": "EXISTING_LOANS",
+      "description": "Applicant already has three or more loans.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 0,
+      "threshold": 3,
+      "note": "",
+      "provenance": "design"
+     },
+     {
+      "rule_id": "DSTI_CAP",
+      "description": "Monthly debt service, including the new instalment, exceeds 50% of observed monthly income.",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 0.451,
+      "threshold": 0.5,
+      "note": "",
+      "provenance": "regulator_reported"
+     },
+     {
+      "rule_id": "INCOME_MISMATCH",
+      "description": "Declared monthly income differs from observed income by more than the allowed band (IMR = declared / observed).",
+      "applicable": true,
+      "triggered": false,
+      "action": "pass",
+      "observed": 1.004,
+      "threshold": {
+       "low": 0.3,
+       "high": 3.0
+      },
+      "note": "",
+      "provenance": "design"
+     }
+    ]
+   },
+   "score": null,
+   "decision": {
+    "decision": "decline",
+    "approved_amount_nrs": null,
+    "reasons": [
+     "Declined by policy rule(s): BLACKLIST."
+    ],
+    "counter_offer": null,
+    "illustrative_rate_pct": null,
+    "policy_version": "f985d9bccc91",
+    "model_version": null
+   },
+   "audit_lines": [
+    "{\"agent\":\"income_node\",\"application_id\":\"DEMO-BLACKLISTED-01\",\"hash\":\"14fd88198eadf8cc27336d5f4227a4b0d07a25e403a40fdb547b52e907d452e4\",\"payload\":{\"declared_monthly_income\":16000.0,\"elapsed_ms\":17.07,\"imr\":1.004,\"imr_status\":\"computed\",\"income_agent_monthly_est\":15937,\"income_confidence\":0.56,\"income_flags\":[],\"income_signal_count\":1,\"remittance_share\":0.0},\"prev_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"seq\":1,\"ts\":\"2026-11-10T06:11:32.700+00:00\"}",
+    "{\"agent\":\"compliance_node\",\"application_id\":\"DEMO-BLACKLISTED-01\",\"hash\":\"34a264cab8382bf474e151dad3eba1895bcfa93559de3c6c6d45f99a83053e16\",\"payload\":{\"compliance_flags\":[\"BLACKLIST\"],\"compliance_notes\":[],\"compliance_status\":\"veto\",\"elapsed_ms\":6.69,\"policy_version\":\"f985d9bccc91\",\"rule_traces\":[{\"action\":\"veto\",\"applicable\":true,\"observed\":true,\"provenance\":\"hackathon_field\",\"rule_id\":\"BLACKLIST\",\"threshold\":true,\"triggered\":true},{\"action\":\"pass\",\"applicable\":true,\"observed\":false,\"provenance\":\"hackathon_field\",\"rule_id\":\"AML_SCREEN\",\"threshold\":true,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"requested\":80000.0,\"tier\":\"mid\"},\"provenance\":\"hackathon_rule\",\"rule_id\":\"KYC_TIER_LIMIT\",\"threshold\":500000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":{\"collateral\":400000.0,\"requested\":80000.0},\"provenance\":\"hackathon_rule\",\"rule_id\":\"COLLATERAL_REQUIRED\",\"threshold\":500000,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":5.02,\"provenance\":\"hackathon_rule\",\"rule_id\":\"AGRI_LOAN_TO_INCOME\",\"threshold\":36,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":0,\"provenance\":\"design\",\"rule_id\":\"EXISTING_LOANS\",\"threshold\":3,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":0.451,\"provenance\":\"regulator_reported\",\"rule_id\":\"DSTI_CAP\",\"threshold\":0.5,\"triggered\":false},{\"action\":\"pass\",\"applicable\":true,\"observed\":1.004,\"provenance\":\"design\",\"rule_id\":\"INCOME_MISMATCH\",\"threshold\":{\"high\":3.0,\"low\":0.3},\"triggered\":false}]},\"prev_hash\":\"14fd88198eadf8cc27336d5f4227a4b0d07a25e403a40fdb547b52e907d452e4\",\"seq\":2,\"ts\":\"2026-11-10T06:11:32.708+00:00\"}",
+    "{\"agent\":\"decision_node\",\"application_id\":\"DEMO-BLACKLISTED-01\",\"hash\":\"8ea8d12db9980082e612e6a2453080daed74ae4cc960c38a14e4b111e5ac4f70\",\"payload\":{\"approved_amount_nrs\":null,\"counter_offer\":null,\"decision_reasons\":[\"Declined by policy rule(s): BLACKLIST.\"],\"elapsed_ms\":5.65,\"final_decision\":\"decline\",\"income_flags\":[],\"model_version\":null,\"not_screened\":[],\"policy_version\":\"f985d9bccc91\"},\"prev_hash\":\"34a264cab8382bf474e151dad3eba1895bcfa93559de3c6c6d45f99a83053e16\",\"seq\":3,\"ts\":\"2026-11-10T06:11:32.715+00:00\"}"
+   ]
+  }
+ ],
+ "model": {
+  "grades": [
+   {
+    "grade": "A",
+    "pd_below": 0.015
+   },
+   {
+    "grade": "B",
+    "pd_below": 0.025
+   },
+   {
+    "grade": "C",
+    "pd_below": 0.04
+   },
+   {
+    "grade": "D",
+    "pd_below": 0.06
+   },
+   {
+    "grade": "E",
+    "pd_below": 1.01
+   }
+  ],
+  "scaling": {
+   "pdo": 20.0,
+   "base_score": 600.0,
+   "base_odds": 50.0,
+   "min_score": 300,
+   "max_score": 850
+  },
+  "monotone": {
+   "instalment_to_income": 1,
+   "loan_to_annual_income": 1,
+   "util_arrears_total_nrs": 1,
+   "collateral_coverage": -1,
+   "overall_on_time_rate": -1,
+   "income_confidence": -1,
+   "credit_bureau_score": -1
+  }
+ },
+ "decision_rules": {
+  "min_income_confidence": 0.4,
+  "pd_approve_max": 0.025,
+  "pd_conditional_max": 0.05,
+  "conditional_amount_factor": 0.85,
+  "counter_offer_max_tenure_months": 60,
+  "illustrative_rates_pct": {
+   "A": 11.0,
+   "B": 12.5,
+   "C": 14.0,
+   "D": 15.5,
+   "E": 17.0
+  }
+ }
+}

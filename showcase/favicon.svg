@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg { fill: #f4f5f2; } .thread { stroke: #b0232f; } .knot { fill: #b0232f; }
+    @media (prefers-color-scheme: dark) { .bg { fill: #121722; } .thread { stroke: #e8545e; } .knot { fill: #e8545e; } }
+  </style>
+  <rect class="bg" width="32" height="32" rx="7"/>
+  <path class="thread" d="M16 3v26" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle class="knot" cx="16" cy="9" r="4"/>
+  <circle class="knot" cx="16" cy="23" r="4"/>
+</svg>

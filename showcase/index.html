@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dhago</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Follow a loan application through Dhago, from the records an informal borrower already leaves to a recommendation a loan officer can check.">
+<meta property="og:title" content="Dhago">
+<meta property="og:description" content="Follow a loan application from wallet, remittance, cooperative and utility records to a recommendation a loan officer can check.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#f4f5f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121722" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/anek-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-pass" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.4l2.6 2.6L14.2 7.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-refer" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 13l6-6M8.5 7H13v4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-veto" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="currentColor"/><path d="M7 7l6 6M13 7l-6 6" fill="none" style="stroke: var(--paper)" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 14.5v-9h5l-1 2 1 2h-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-na" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2.4 2.4"/><path d="M6.5 10h7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+</svg>
+
+<a class="skip" href="#flow">Skip to the application</a>
+
+<header class="masthead">
+  <a class="wordmark" href="#top" aria-label="Dhago, back to top">
+    <span class="wordmark-np" lang="ne">धागो</span>
+    <span class="wordmark-en">Dhago</span>
+  </a>
+  <nav class="masthead-nav" aria-label="Project links">
+    <a href="https://github.com/sagarnewpane/autonomous-credit-and-lending-orchestrator" rel="noopener">Code on GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="intro" aria-labelledby="intro-title">
+    <h1 id="intro-title">Most informal workers have no payslip. They do have records.</h1>
+    <p class="lede">Dhago reads the records a borrower already leaves behind: wallet payments, remittances, cooperative sales and utility bills. It checks them against the income the borrower declares, applies written lending rules, estimates the risk and gives a loan officer a recommendation with its reasons.</p>
+  </section>
+
+  <section class="picker" aria-labelledby="picker-title">
+    <div class="picker-head">
+      <h2 id="picker-title">Follow an application</h2>
+      <p class="note">Four invented applicants, run through the real pipeline.</p>
+    </div>
+    <fieldset class="choices" id="choices">
+      <legend class="visually-hidden">Choose an applicant</legend>
+      <p class="loading">Loading the examples.</p>
+    </fieldset>
+  </section>
+
+  <ol class="flow" id="flow">
+    <li class="stage" data-stage="application" style="--i:0">
+      <span class="knot" aria-hidden="true">1</span>
+      <div class="stage-head">
+        <h3>Application</h3>
+        <p class="stage-sub">What the applicant tells the bank</p>
+      </div>
+      <div class="stage-body" id="body-application"></div>
+    </li>
+    <li class="stage" data-stage="income" style="--i:1">
+      <span class="knot" aria-hidden="true">2</span>
+      <div class="stage-head">
+        <h3>Income</h3>
+        <p class="stage-sub">What the records show</p>
+      </div>
+      <div class="stage-body" id="body-income"></div>
+    </li>
+    <li class="stage" data-stage="rules" style="--i:2">
+      <span class="knot" aria-hidden="true">3</span>
+      <div class="stage-head">
+        <h3>Rules</h3>
+        <p class="stage-sub">Written lending rules, each with its source</p>
+      </div>
+      <div class="stage-body" id="body-rules"></div>
+    </li>
+    <li class="stage" data-stage="risk" style="--i:3">
+      <span class="knot" aria-hidden="true">4</span>
+      <div class="stage-head">
+        <h3>Risk</h3>
+        <p class="stage-sub">Chance of default, and what moved it</p>
+      </div>
+      <div class="stage-body" id="body-risk"></div>
+    </li>
+    <li class="stage" data-stage="recommendation" style="--i:4">
+      <span class="knot" aria-hidden="true">5</span>
+      <div class="stage-head">
+        <h3>Recommendation</h3>
+        <p class="stage-sub">What the loan officer receives</p>
+      </div>
+      <div class="stage-body" id="body-recommendation"></div>
+    </li>
+  </ol>
+
+  <section class="audit" id="audit" aria-labelledby="audit-title">
+    <div class="audit-head">
+      <h2 id="audit-title">Audit log</h2>
+      <p class="stage-sub">A chained record of every stage</p>
+    </div>
+    <p class="audit-intro">Each stage appends an entry that carries the SHA-256 hash of the entry before it. Your browser is re-checking the hashes the pipeline wrote for this application. Try changing the log.</p>
+    <ol class="chain" id="chain"></ol>
+    <div class="verdict" id="verdict" role="status" aria-live="polite"></div>
+    <div class="tamper" role="group" aria-label="Change the log">
+      <button type="button" id="t-income">Edit the income entry</button>
+      <button type="button" id="t-forge">Rewrite the recommendation and its hash</button>
+      <button type="button" id="t-delete">Delete the last entry</button>
+      <button type="button" id="t-restore" class="quiet">Restore the log</button>
+    </div>
+  </section>
+</main>
+
+<footer class="colophon">
+  <div class="colophon-grid">
+    <p>Dhago began as team ZeroShot's entry to the GIBL AI/ML Hackathon 2026, organised by Global IME Bank, where it was one of 16 teams selected for the onsite round (3 to 5 July 2026, Budhanilkantha). It has since been rebuilt as a research prototype by Pujan Pant and Sagar Newpane.</p>
+    <p>The model was trained on the hackathon's synthetic data, so this is not a lending product. Dhago recommends and a loan officer decides; it declines only when a written veto rule fires. The four applicants above are invented, and their numbers come from running the released code (version 0.2.0).</p>
+  </div>
+  <p class="colophon-links"><a href="https://github.com/sagarnewpane/autonomous-credit-and-lending-orchestrator" rel="noopener">Code, paper materials and tests on GitHub</a></p>
+</footer>
+
+<p class="visually-hidden" id="announce" aria-live="polite"></p>
+<noscript><p class="noscript">This page needs JavaScript to show the four applications.</p></noscript>
+<script src="app.js" defer></script>
+</body>
+</html>
