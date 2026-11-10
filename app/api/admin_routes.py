@@ -39,18 +39,20 @@ def get_admin_stats(
     admin: dict = Depends(get_current_admin_user),
 ):
     try:
+        # CASE WHEN is used instead of FILTER so the same query runs on SQLite and
+        # PostgreSQL. COUNT(CASE ...) returns 0 on an empty table in both.
         stats_row = db.raw("""
             SELECT
-                COUNT(*)::int AS total,
-                COUNT(*) FILTER (WHERE final_decision = 'APPROVE')::int AS approved,
-                COUNT(*) FILTER (WHERE final_decision = 'REJECT')::int AS rejected,
-                COUNT(*) FILTER (WHERE final_decision IS NULL OR final_decision = 'PENDING')::int AS pending,
-                COUNT(*) FILTER (WHERE compliance_status = 'flag')::int AS flagged,
-                COUNT(*) FILTER (WHERE final_decision = 'MODIFY')::int AS modified,
-                COUNT(*) FILTER (WHERE final_decision = 'MANUAL_REVIEW')::int AS manual,
-                COALESCE(SUM(requested_amount_nrs), 0)::numeric AS total_requested,
-                COALESCE(SUM(approved_amount_nrs) FILTER (WHERE final_decision = 'APPROVE'), 0)::numeric AS total_approved_amount,
-                COALESCE(ROUND(AVG(credit_score) FILTER (WHERE credit_score IS NOT NULL), 1), 0)::numeric AS avg_score
+                COUNT(*) AS total,
+                COUNT(CASE WHEN final_decision = 'APPROVE' THEN 1 END) AS approved,
+                COUNT(CASE WHEN final_decision = 'REJECT' THEN 1 END) AS rejected,
+                COUNT(CASE WHEN final_decision IS NULL OR final_decision = 'PENDING' THEN 1 END) AS pending,
+                COUNT(CASE WHEN compliance_status = 'flag' THEN 1 END) AS flagged,
+                COUNT(CASE WHEN final_decision = 'MODIFY' THEN 1 END) AS modified,
+                COUNT(CASE WHEN final_decision = 'MANUAL_REVIEW' THEN 1 END) AS manual,
+                COALESCE(SUM(requested_amount_nrs), 0) AS total_requested,
+                COALESCE(SUM(CASE WHEN final_decision = 'APPROVE' THEN approved_amount_nrs ELSE 0 END), 0) AS total_approved_amount,
+                COALESCE(ROUND(AVG(CASE WHEN credit_score IS NOT NULL THEN credit_score END), 1), 0) AS avg_score
             FROM loan_applications
         """)[0]
 
@@ -359,7 +361,7 @@ def get_all_users(
         params = []
 
         if search:
-            where_clause = " WHERE LOWER(email) LIKE %s OR LOWER(id::text) LIKE %s"
+            where_clause = " WHERE LOWER(email) LIKE %s OR LOWER(CAST(id AS TEXT)) LIKE %s"
             sl = f"%{search.lower()}%"
             params.extend([sl, sl])
 

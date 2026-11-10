@@ -8,8 +8,9 @@
 
 	const auth = getAuth();
 
-	let email = $state('');
-	let password = $state('');
+	// Seeded SQLite demo admin; see app/db/sqlite.py.
+	let email = $state('admin@dhago.app');
+	let password = $state('Admin@2026');
 	let error = $state('');
 	let loading = $state(false);
 
@@ -64,13 +65,18 @@
 			{/if}
 
 			<form onsubmit={handleSubmit} class="space-y-4">
-				<Input label="Email" type="email" bind:value={email} required placeholder="admin@autolend.com" />
+				<Input label="Email" type="email" bind:value={email} required placeholder="admin@dhago.app" />
 				<Input label="Password" type="password" bind:value={password} required placeholder="••••••••" />
 
 				<Button type="submit" {loading} class="w-full">
 					Sign In as Admin
 				</Button>
 			</form>
+
+			<div class="mt-5 rounded-lg bg-brand-charcoal/5 border border-brand-charcoal/10 px-3 py-2 text-xs text-brand-charcoal/60">
+				Demo admin: <span class="font-mono text-brand-charcoal/80">admin@dhago.app</span> /
+				<span class="font-mono text-brand-charcoal/80">Admin@2026</span>
+			</div>
 
 			<p class="text-center text-sm text-brand-charcoal/60 mt-6">
 				<a href="/auth/login" class="text-brand-navy hover:text-brand-navy/80 font-medium">← Back to regular login</a>

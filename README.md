@@ -179,7 +179,14 @@ Track A/structured/
 ├── income_signal_features.csv    └── utility_payments.parquet
 ```
 
-The tests and the API run without the data.
+The tests and the API run without the data. The API defaults to SQLite and seeds two demo accounts on first start:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Applicant | `demo@dhago.app` | `Demo@2026` |
+| Admin | `admin@dhago.app` | `Admin@2026` |
+
+Set `SEED_DEMO_USERS=0` to disable them, or override the credentials with `DEMO_USER_EMAIL`, `DEMO_USER_PASSWORD`, `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD`. The login pages are pre-filled with these accounts.
 
 ## Usage
 
@@ -239,9 +246,12 @@ pytest
 ### Run the API
 
 ```bash
-export DATA_BACKEND=files JWT_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+export DATA_BACKEND=sqlite SQLITE_PATH=data/dhago.db
+export JWT_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
 uvicorn app.main:app --port 8000
 ```
+
+The SQLite database and the demo accounts are created automatically on first start. Use `DATA_BACKEND=files` to keep the previous in-memory Track A mode.
 
 Interactive documentation is at `http://localhost:8000/docs`. The main endpoints:
 
@@ -253,7 +263,7 @@ Interactive documentation is at `http://localhost:8000/docs`. The main endpoints
 | `GET /api/v1/loan/compliance/references/{application_id}` | Rule traces for an application |
 | `GET /api/v1/admin/audit/{application_id}` | Audit-log entries and a chain check (admin only) |
 
-[`tests/test_api_offline.py`](tests/test_api_offline.py) shows a complete sign-up, application and decision round trip. In files mode, data written through the API are kept in memory only. A new applicant has no transaction records and no screening result, so the API refers every application it receives in this mode.
+[`tests/test_api_offline.py`](tests/test_api_offline.py) shows a complete sign-up, application and decision round trip. In SQLite mode, users and applications persist in the file named by `SQLITE_PATH`; on Vercel that file is `/tmp/dhago.db`, which is writable but per-instance and ephemeral. In files mode, data written through the API are kept in memory only. A new applicant has no transaction records and no screening result, so the API refers every application it receives in either mode.
 
 The officer dashboard is a SvelteKit app. It builds and type-checks, but has not been tested in a browser for this release:
 
@@ -296,8 +306,9 @@ Editing an entry makes `verify()` report its sequence number, unless every later
 | Score Agent (PD model) | Implemented; trained on synthetic outcomes only | E2 |
 | Decision Agent and counter-offer | Implemented | `tests/test_decision_agent.py` |
 | Hash-chained audit log | Implemented | `tests/test_audit.py`, E5 |
-| Offline data backend | Implemented | `tests/test_memory_backend.py` |
-| REST API | Implemented; tested in files mode | `tests/test_api_offline.py` |
+| SQLite data backend | Implemented; default for the API, seeded demo logins | `app/db/sqlite.py`, `tests/test_sqlite_backend.py` |
+| Offline data backend | Implemented; in-memory Track A CSVs | `tests/test_memory_backend.py` |
+| REST API | Implemented; tested in files and SQLite modes | `tests/test_api_offline.py`, `tests/test_sqlite_backend.py` |
 | Showcase site | Static walkthrough on invented applicants; checked in Chromium at desktop and phone widths | `showcase/` |
 | Document Agent (OCR of citizenship, land and tax documents) | Prototype; not part of the pipeline and not evaluated | `app/agents/parser_agent.py` |
 | PostgreSQL deployment | From the hackathon; schema and loaders not included, not retested | `app/db/postgres.py` |

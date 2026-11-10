@@ -10,6 +10,18 @@ __pycache__/
 audit_log.jsonl
 offline_run*.jsonl
 
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local SQLite database
+data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
 # Node / SvelteKit
 frontend/node_modules/
 frontend/.svelte-kit/

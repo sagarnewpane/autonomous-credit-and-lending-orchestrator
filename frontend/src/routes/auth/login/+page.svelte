@@ -8,8 +8,9 @@
 
 	const auth = getAuth();
 
-	let email = $state('');
-	let password = $state('');
+	// Seeded SQLite demo account; see app/db/sqlite.py.
+	let email = $state('demo@dhago.app');
+	let password = $state('Demo@2026');
 	let error = $state('');
 	let loading = $state(false);
 
@@ -67,6 +68,11 @@
 					Sign in
 				</Button>
 			</form>
+
+			<div class="mt-5 rounded-lg bg-brand-navy/5 border border-brand-navy/10 px-3 py-2 text-xs text-brand-charcoal/60">
+				Demo account: <span class="font-mono text-brand-charcoal/80">demo@dhago.app</span> /
+				<span class="font-mono text-brand-charcoal/80">Demo@2026</span>
+			</div>
 
 			<p class="text-center text-sm text-brand-charcoal/50 mt-6">
 				Don't have an account?

@@ -27,6 +27,12 @@ offline_run.jsonl
 offline_run*.jsonl
 .env
 .env.*
+# Local SQLite database; Vercel uses /tmp/dhago.db at runtime.
+data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
 node_modules/
 svelte.config.js
 pytest.ini
