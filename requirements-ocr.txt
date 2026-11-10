@@ -1,0 +1,8 @@
+# Optional: Document Agent (app/agents/parser_agent.py). Also needs the Tesseract binary
+# (nep+eng language data) and an Ollama server with the models set in OLLAMA_OCR_MODEL and
+# OLLAMA_CLEANUP_MODEL.
+pytesseract==0.3.13
+opencv-python-headless==4.10.0.84
+pillow==12.2.0
+ollama==0.6.1
+groq==1.1.2

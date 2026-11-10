@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Dhago: a compliance-first credit assessment pipeline for informal borrowers in Nepal"
+abstract: >-
+  A multi-agent loan-assessment pipeline that checks an applicant's declared income
+  against observed transaction records (mobile wallet, remittance, cooperative sales),
+  applies lending rules kept as versioned configuration, estimates a probability of
+  default with a monotone gradient-boosted model, and records every step in a
+  hash-chained audit log. Built for the GIBL AI/ML Hackathon 2026 and evaluated on the
+  organisers' synthetic Track A data.
+authors:
+  - family-names: Pant
+    given-names: Pujan
+  - family-names: Newpane
+    given-names: Sagar
+version: 0.2.0
+date-released: 2026-11-10
+license: MIT
+repository-code: "https://github.com/sagarnewpane/autonomous-credit-and-lending-orchestrator"
+keywords:
+  - credit scoring
+  - financial inclusion
+  - alternative data
+  - informal economy
+  - Nepal
+  - policy as code
+  - audit trail
+# Add a preferred-citation block for the paper once it has been accepted.
