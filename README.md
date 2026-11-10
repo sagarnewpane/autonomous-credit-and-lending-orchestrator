@@ -19,6 +19,12 @@
 </p>
 
 <p align="center">
+  <a href="https://dhago-credit-web.vercel.app"><b>Live demo</b></a> ·
+  <a href="https://dhago-credit-api.vercel.app/docs">API documentation</a> ·
+  <a href="https://github.com/sagarnewpane/autonomous-credit-and-lending-orchestrator">Source</a>
+</p>
+
+<p align="center">
   <a href="#see-it-work">See it work</a> ·
   <a href="#introduction">How it works</a> ·
   <a href="#results-at-a-glance">Results</a> ·
