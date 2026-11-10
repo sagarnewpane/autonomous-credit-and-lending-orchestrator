@@ -6,9 +6,9 @@ on:
     paths:
       - "app/**"
       - "config/**"
-      - "requirements*.txt"
-      - "runtime.txt"
+      - "*.txt"
       - ".python-version"
+      - ".vercelignore"
       - "vercel.json"
       - ".github/workflows/deploy-api.yml"
   workflow_dispatch:
