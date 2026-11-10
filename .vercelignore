@@ -1,0 +1,35 @@
+# The backend only needs app/, config/, requirements.txt, runtime.txt and .python-version.
+# Keep frontend/ uploadable here because Vercel reads this root ignore file for the
+# frontend project too (its own Root Directory is frontend/).
+showcase/
+docs/
+legacy/
+experiments/
+tests/
+scripts/
+.github/
+
+# Local artefacts and development files
+.git/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+audit_log.jsonl
+offline_run.jsonl
+offline_run*.jsonl
+.env
+.env.*
+node_modules/
+svelte.config.js
+pytest.ini
+docker-compose.yml
+requirements-dev.txt
+requirements-ocr.txt
+skills-lock.json
+API_Endpoints.postman_collection.json
+*.md
+LICENSE
+CITATION.cff

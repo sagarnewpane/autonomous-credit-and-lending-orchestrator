@@ -8,7 +8,10 @@ DATA_BACKEND selects where agents read and write:
 
 import os
 
-if os.getenv("DATA_BACKEND", "postgres").strip().lower() == "files":
+# On Vercel there is no bundled PostgreSQL, so the file-backed API is the safe default.
+_default_backend = "files" if os.getenv("VERCEL") else "postgres"
+
+if os.getenv("DATA_BACKEND", _default_backend).strip().lower() == "files":
     from .memory import db  # noqa: F401
 else:
     from .postgres import db  # noqa: F401

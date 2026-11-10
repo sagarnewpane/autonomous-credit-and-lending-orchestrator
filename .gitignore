@@ -1,0 +1,23 @@
+# Vercel
+.vercel/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+audit_log.jsonl
+offline_run*.jsonl
+
+# Node / SvelteKit
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
+frontend/.vercel/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# OS
+.DS_Store

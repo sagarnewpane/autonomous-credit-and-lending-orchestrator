@@ -29,7 +29,9 @@ GENESIS = "0" * 64
 
 
 def _path() -> Path:
-    return Path(os.getenv("AUDIT_LOG_PATH", "audit_log.jsonl"))
+    # Serverless platforms (Vercel) have a read-only project directory; only /tmp is writable.
+    default = "/tmp/audit_log.jsonl" if os.getenv("VERCEL") else "audit_log.jsonl"
+    return Path(os.getenv("AUDIT_LOG_PATH", default))
 
 
 def _canonical(entry: Dict[str, Any]) -> str:
