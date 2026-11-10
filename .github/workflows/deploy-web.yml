@@ -1,0 +1,149 @@
+name: Record web deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/deploy-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+  statuses: read
+
+concurrency:
+  group: record-web-deployment
+  cancel-in-progress: true
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Record Vercel deployment in GitHub
+        uses: actions/github-script@v7
+        env:
+          APP_NAME: dhago-credit-web
+          APP_URL: https://dhago-credit-web.vercel.app
+          ENVIRONMENT: production-web
+        with:
+          script: |
+            const appName = process.env.APP_NAME;
+            const appUrl = process.env.APP_URL;
+            const environment = process.env.ENVIRONMENT;
+            const sha = context.sha;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: deployment } = await github.rest.repos.createDeployment({
+              owner,
+              repo,
+              ref: sha,
+              environment,
+              description: `Vercel ${appName} production deployment`,
+              required_contexts: [],
+              auto_merge: false,
+              transient_environment: false,
+              production_environment: true,
+            });
+            const deploymentId = deployment.id;
+
+            await github.rest.repos.createDeploymentStatus({
+              owner,
+              repo,
+              deployment_id: deploymentId,
+              state: 'in_progress',
+              description: 'Waiting for Vercel build',
+              environment_url: appUrl,
+              log_url: `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`,
+            });
+
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            let vercel = null;
+            let sawStatus = false;
+
+            for (let attempt = 0; attempt < 24; attempt += 1) {
+              const { data: statuses } = await github.rest.repos.listCommitStatusesForRef({
+                owner,
+                repo,
+                ref: sha,
+                per_page: 100,
+              });
+
+              vercel = statuses.find(
+                (status) =>
+                  status.context.startsWith('Vercel') &&
+                  status.context.includes(appName),
+              );
+
+              if (vercel) {
+                sawStatus = true;
+                if (vercel.state === 'success') break;
+                if (vercel.state === 'failure' || vercel.state === 'error') break;
+              } else if (attempt >= 11) {
+                // No Vercel status after roughly two minutes. The commit was
+                // probably skipped by Vercel, so stop waiting and link the
+                // current production alias below.
+                break;
+              }
+
+              await sleep(10000);
+            }
+
+            const logUrl =
+              vercel?.target_url ||
+              `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            if (vercel?.state === 'success') {
+              await github.rest.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: deploymentId,
+                state: 'success',
+                description: 'Vercel production deployment is live',
+                environment_url: appUrl,
+                log_url: logUrl,
+              });
+              return;
+            }
+
+            if (vercel?.state === 'failure' || vercel?.state === 'error') {
+              await github.rest.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: deploymentId,
+                state: 'failure',
+                description: `Vercel deployment ${vercel.state}`,
+                log_url: logUrl,
+              });
+              core.setFailed(`Vercel deployment ${vercel.state}`);
+              return;
+            }
+
+            // Workflow-only changes do not trigger a Vercel build. Point the
+            // GitHub deployment at the current production alias instead of
+            // leaving it stuck in progress.
+            if (!sawStatus) {
+              await github.rest.repos.createDeploymentStatus({
+                owner,
+                repo,
+                deployment_id: deploymentId,
+                state: 'success',
+                description: 'Current production alias (Vercel skipped this commit)',
+                environment_url: appUrl,
+                log_url: `https://vercel.com/sagar-newpanes-projects/${appName}`,
+              });
+              return;
+            }
+
+            await github.rest.repos.createDeploymentStatus({
+              owner,
+              repo,
+              deployment_id: deploymentId,
+              state: 'failure',
+              description: 'Timed out waiting for Vercel',
+              log_url: logUrl,
+            });
+            core.setFailed('Timed out waiting for Vercel deployment status');
