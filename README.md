@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/sagarnewpane/autonomous-credit-and-lending-orchestrator/actions/workflows/tests.yml"><img src="https://github.com/sagarnewpane/autonomous-credit-and-lending-orchestrator/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
+  
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.13-blue.svg" alt="Python 3.13"></a>
   <img src="https://img.shields.io/badge/LangGraph-4%20agents-1f6feb.svg" alt="LangGraph: 4 agents">
