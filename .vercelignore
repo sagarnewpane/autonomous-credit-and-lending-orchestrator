@@ -10,7 +10,6 @@ scripts/
 .github/
 
 # Local artefacts and development files
-.git/
 .venv/
 venv/
 __pycache__/
